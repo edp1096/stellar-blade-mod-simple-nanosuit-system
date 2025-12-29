@@ -1,0 +1,226 @@
+Research on how to change costumes.
+
+
+
+Inspecting Eve's obj
+	Main object
+		Runtime path
+			/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131
+		Class
+			/Script/SB.SBCharacter
+		Class Private
+			CH_P_EVE_01_Blueprint_C
+		Props
+			SkeletalMeshName				CH_P_EVE_29
+			Mesh							CharacterMesh0
+				Name refers to SBSkeletalMeshComponent /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CharacterMesh0
+			ResourcePath					/Game/Art/Character/PC/CH_P_EVE_01/
+			CharacterBindingPhysicsAsset	PhysicsAsset'/Game/Art/Character/NPC/CH_NPC_Drone/Drone_PhysicsAsset.Drone_PhysicsAsset'
+			BodyMeshOriginPhysicsAsset		PhysicsAsset'/Game/Art/Character/PC/CH_P_EVE_09/CH_P_EVE_09_Physics.CH_P_EVE_09_Physics'
+			FootStepSet						SBCharacterFootStepSet'/Game/Art/FX/PS/PhySufaceParticleSet/Footstep/PC/FS_PC.FS_PC'
+			FactorSet						SBCharacterFactorSet'/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_FactorSSet.CH_P_EVE_01_FactorSSet'
+			FactorSetComponent
+				gameplay coefficients
+			JumpMaxCount					2
+			bEnableDoubleJump				True
+			DefaultCameraArmLength			340
+			CharacterTags					("PhotoModeSubjectTag_EVE")
+			Dron							None
+			DroneLocationInfoData			SBDroneLocationData'/Game/System/Camera/dronLocationData.dronLocationData'
+			DialogBoundsSet					SBCharacterDialogBoundsSet'/Game/Art/Sequencer/Dialog/DBS_Eve.DBS_Eve'
+			CurrentStanceName				P_Eve_Default
+			BodyRelativeLocation			(X=0.000000,Y=0.000000,Z=-97.000000)
+			CharacterFixedLocation			(X=0.000000,Y=0.000000,Z=0.000000)
+			NeedPonytailClothConfigUpdate	0
+			EquipmentDataList				("","LightSword1","","","","Hair_002_Part1","Hair_002_Part2","","Earring_003","FaceAccessory_012","","","","BS_01")
+			bUseSliceSkeletalMesh			False
+			SliceSkeletalMeshDataAsset		None
+			SBPonytail						SBPonytail
+			SBPonytailShort					SBPonytailShort
+			SBAccSlot3						SBAccSlot3
+			SBAccSlot1						SBAccSlot1
+			Mesh_Face						Mesh_Face
+			SBHair							SBHair
+			ACC_HairPin						ACC_HairPin
+			isDronHide						False
+			HairGravity							0.000000
+			HairStabiliser					False
+			WeaponComponent					SBSkeletalMeshComponent'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.SBSkeletalMeshComponent_2147481305'
+			WeaponMaterials
+			DirtValue						0.000000
+			BloodValue						0.000000
+			preSkeletalMesh					None
+			preMaterials
+			ConvertFaceToJALI				True
+			JALIFacialIdleAnimIndex 		0
+			SwordTemp						0.000000
+			BaseEyeHeight					64.000000
+			HairWindRootTarget				NewEnumerator1
+				it was shown as "Actor" in "Live View"
+			HairWindVector					(X=0.000000,Y=0.000000,Z=0.000000)
+			bUseHipSpring					True
+			bUseThighSpring					True
+			TachyModeSkeletalMesh			SkeletalMesh'/Game/Art/Character/PC/CH_P_EVE_10/CH_P_EVE_10.CH_P_EVE_10'
+			TachyFusionModeSkeletalMesh		SkeletalMesh'/Game/Art/Character/PC/CH_P_EVE_Fusion/CH_P_EVE_Fusion.CH_P_EVE_Fusion'
+			TachyFusionNoAccSkeletalMesh	SkeletalMesh'/Game/Art/Character/PC/CH_P_EVE_Fusion/CH_P_EVE_Fusion_NoAcc.CH_P_EVE_Fusion_NoAcc'
+			isFusionTachyMode				False
+			PreHideHairMesh					False
+			bCustomOverrideClothPhysicsAsset	False
+			CustomOverrideClothPhysicsAssetPath	''
+			VisibilityHairOnlySequence		True
+			Owner							SBNetworkPlayerController'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.SBNetworkPlayerController_2147482148'
+			Controller						SBNetworkPlayerController'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.SBNetworkPlayerController_2147482148'
+			PlayerState						SBNetworkPlayerState'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.SBNetworkPlayerState_2147482147'
+				Function /Script/SB.SBNetworkPlayerState:OnRep_ActorGuid
+			InstanceComponents				(BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightThigh"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveLeftThigh"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveHead"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveSpine"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightCalf"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightCalfLong"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightCalfLongWide"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveLeftCalf"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveLeftCalfLong"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightForearm"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveSwordHeavy"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveSwordBig"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveSwordHandle"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveAllBody"',CapsuleComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveAllBody_Evade"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveLeftFoot"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightFoot"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveForearmR"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveForearmL"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveUpperArmR"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveUpperArmL"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveHandR"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveHandL"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveSpine"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveRightThigh"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveLeftThigh"')
+			BlueprintCreatedComponents		("SBSceneCaptureComponent2D","ACC_HairPin","CameraOverlap","SBHair","Mesh_Face","WindOriginArrow","SBPonytail","BodyCollision","AssistanceSlot","WeaponPhysicsCollision","BP_FluxInteractionComponent","BP_FluxDataComponent","BP_FluxModifierForceComponent","SBAccSlot1","SBAccSlot3","RainHaptic","TachyModeVBComp","BGM_TachyMode","AMB_TachyMode","SBPonytailShort","BGM_FusionMode","AMB_FusionMode")
+			AIControllerClass				Class'/Script/AIModule.AIController'
+		Functions
+				get them like this:
+					StaticFindObject('/Script/SB.SBCharacter:GetCameraZoom')
+			GetBodyMeshName
+			GetCameraZoom
+			GetCamOverrideFovMode
+			NotifyBP_SetMesh
+				ByteProperty inMeshSlot
+			ServerRequest_DoJump
+			GetSBSkeletalMeshComponent
+				ByteProperty	Slot
+								0 in our case for body mesh,  not 13 as in enum
+			ApplyMeshInfo
+				ObjectProperty	PinActor
+				ByteProperty	InSlot
+			SpawnDefaultController
+			MakeMIDForMaterial
+	Mesh Component
+		Path
+			/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CharacterMesh0
+		Class Short
+			SBSkeletalMeshComponent
+		Props
+			SkeletalMesh				SkeletalMesh'/Game/Art/Character/PC/CH_P_EVE_29/CH_P_EVE_29.CH_P_EVE_29'
+			PhysicsAssetOverride		PhysicsAsset'/Game/Art/Character/PC/CH_P_EVE_29/CH_P_EVE_29_Physics.CH_P_EVE_29_Physics'
+			AnimClass					AnimBlueprintGeneratedClass'/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_AnimBP_New.CH_P_EVE_01_AnimBP_New_C'
+			AnimScriptInstance			CH_P_EVE_01_AnimBP_New_C'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CharacterMesh0.CH_P_EVE_01_AnimBP_New_C_2147482130'
+			PostProcessAnimInstance		CH_P_EVE_29_AnimBP_C'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CharacterMesh0.CH_P_EVE_29_AnimBP_C_2147479993'
+			ClothingSimulationFactory	Class'/Script/ClothingSystemRuntimeNv.ClothingSimulationFactoryNv'
+			ClothingInteractor			ClothingSimulationInteractorNv'/Engine/Transient.ClothingSimulationInteractorNv_2147481299'
+			MeshSlot					ESBMesh_Body
+			MeshSLotAttachType			Root
+			BodySetup					None
+				ObjectProperty
+			MeshSlotAttachType			Root
+			AttachChildren				("ACC_HairPin","SBHair","Mesh_Face","SBPonytail","BodyCollision","WeaponPhysicsCollision","SBAccSlot1","SBAccSlot3","SBPonytailShort",SBSkeletalMeshComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.SBSkeletalMeshComponent_2147481305"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightThigh"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveLeftThigh"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveHead"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveSpine"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightCalf"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightCalf"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightCalfLong"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightCalfLongWide"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveLeftCalf"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveLeftCalfLong"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightForearm"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveSwordHeavy"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveSwordBig"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveSwordHandle"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveAllBody"',CapsuleComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveAllBody_Evade"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveLeftFoot"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.EveRightFoot"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveForearmR"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveForearmL"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveUpperArmR"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveUpperArmL"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveHandR"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveHandL"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveSpine"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveRightThigh"',BoxComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CollisionGroup.Photo_EveLeftThigh"',SBSkeletalMeshComponent'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.SBSkeletalMeshComponent_2147479966"')
+			BodyInstance				(ObjectType=ECC_Pawn,CollisionEnabled=QueryAndPhysics,SleepFamily=Custom,DOFMode=Default,bUseCCD=False,bIgnoreAnalyticCollisions=False,bMaskFilter1=False,bMaskFilter2=False,bMaskFilter3=False,bNotifyRigidBodyCollision=False,bLockTranslation=True,bLockRotation=True,bLockXTranslation=False,bLockYTranslation=False,bLockZTranslation=False,bLockXRotation=False,bLockYRotation=False,bLockZRotation=False,bOverrideMaxAngularVelocity=False,bOverrideMaxDepenetrationVelocity=False,bOverrideWalkableSlopeOnInstance=False,bInterpolateWhenSubStepping=True,CollisionProfileName="Custom",PositionSolverIterationCount=8,VelocitySolverIterationCount=1,CollisionResponses=(ResponseArray=((Channel="EngineTraceChannel2",Response=ECR_Ignore),(Channel="EngineTraceChannel3",Response=ECR_Ignore),(Channel="EngineTraceChannel4",Response=ECR_Ignore),(Channel="EngineTraceChannel5",Response=ECR_Ignore),(Channel="EngineTraceChannel6",Response=ECR_Ignore),(Channel="WorldStatic",Response=ECR_Ignore),(Channel="Camera",Response=ECR_Ignore),(Channel="Vehicle",Response=ECR_Ignore),(Channel="PawnCollision",Response=ECR_Ignore),(Channel="SoundOcclusion",Response=ECR_Ignore))),MaxDepenetrationVelocity=0.000000,MassInKgOverride=100.000000,LinearDamping=0.010000,AngularDamping=0.000000,CustomDOFPlaneNormal=(X=0.000000,Y=0.000000,Z=0.000000),COMNudge=(X=0.000000,Y=0.000000,Z=0.000000),MassScale=1.000000,InertiaTensorScale=(X=1.000000,Y=1.000000,Z=1.000000),LimitRotation=(Pitch=0.000000,Yaw=0.000000,Roll=0.000000),LimitRotationOffset=(Pitch=0.000000,Yaw=0.000000,Roll=0.000000),DisableTag="",WalkableSlopeOverride=(WalkableSlopeBehavior=WalkableSlope_Default,WalkableSlopeAngle=0.000000),PhysMaterialOverride=None,MaxAngularVelocity=3600.000000,CustomSleepThresholdMultiplier=1.000000,StabilizationThresholdMultiplier=1.000000,PhysicsBlendWeight=0.000000,MaxPhysicsBlendWeight=1.000000,bSimulatePhysics=True,bOverrideMass=False,bEnableGravity=True,bAutoWeld=False,bStartAwake=True,bGenerateWakeEvents=False,bUpdateMassWhenScaleChanges=False)
+			OverrideMaterials			(MaterialInstanceDynamic'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CharacterMesh0.MaterialInstanceDynamic_2147479980"',MaterialInstanceDynamic'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CharacterMesh0.MaterialInstanceDynamic_2147479979"',MaterialInstanceDynamic'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CharacterMesh0.MaterialInstanceDynamic_2147479978"',MaterialInstanceDynamic'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CharacterMesh0.MaterialInstanceDynamic_2147479977"',MaterialInstanceDynamic'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CharacterMesh0.MaterialInstanceDynamic_2147479976"',MaterialInstanceDynamic'"/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.CharacterMesh0.MaterialInstanceDynamic_2147479975"')
+		Functions
+			SetSkeletalMesh
+				ObjectProperty		NewMesh
+				BoolProperty		bReinitPose
+/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.SBNetworkPlayerState_2147482143
+	PlayerId	257
+	UniqueId	76561199024359147
+	PawnPrivate	CH_P_EVE_01_Blueprint_C'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127'
+	ActorNetGuid	0
+/Script/SB.SBCheatManager
+		Seems functions don't work at all
+	Function /Script/SB.SBCheatManager:SBChangeBody
+		NameProperty	MeshPath
+	Function /Script/SB.SBCheatManager:SBNextChangeBody
+	Function /Script/SB.SBCheatManager:SBChangeFace
+		NameProperty	MeshPath
+	Function /Script/SB.SBCheatManager:SBChangeMesh
+		IntProperty		MeshInfoIndex
+		NameProperty	MeshPath
+		NameProperty	AnimPath
+	Function /Script/SB.SBCheatManager:SBEquipBodySuit
+		IntProperty		ShortCutNum
+	Function /Script/SB.SBCheatManager:SBLoadGameOption
+	Function /Script/SB.SBCheatManager:SBPlayerEquipItem
+		StrProperty		EquipType
+		BoolProperty	bEquip
+		StrProperty		ItemAlias
+	Function /Script/SB.SBCheatManager:SBPlayerJaliFace
+		BoolProperty	bActive
+	Function /Script/SB.SBCheatManager:SBPlayerMaterialChange
+		IntProperty		Index
+	Function /Script/SB.SBCheatManager:SBRenderFace
+		BoolProperty	inOn
+	Function /Script/SB.SBCheatManager:SBRenderHair
+		BoolProperty	inOn
+	Function /Script/SB.SBCheatManager:SBResourceCacheEnable
+		BoolProperty	inEnable
+	Function /Script/SB.SBCheatManager:SBResourceCacheManagerEnable
+		BoolProperty	inEnable
+	Function /Script/SB.SBCheatManager:SBResourceCacheUpdate
+	Function /Script/SB.SBCheatManager:SBRSToPA
+			SBRSToPA почти наверняка — мост “Run Script → Play Action” (или “Run Script → Perform Action”), то есть вызов функции/действия по имени из скрипта. Это типичная dev/cheat-утилита.
+		StrProperty inScriptPath
+			вероятно путь к скрипту / таблице / blueprint / lua-файлу
+		StrProperty inFunctionName
+			probably function or command name
+	Function /Script/SB.SBCheatManager:SBRSToPC
+			probably “Run Script → Player Controller”
+		StrProperty		inScriptPath
+		StrProperty		inFunctionName
+	Function /Script/SB.SBCheatManager:SBSetBodySuitLevel
+		StrProperty		InItemAlias
+		UInt32Property	inLevel
+		BoolProperty	bConsumeItem
+	Function /Script/SB.SBCheatManager:SBSetVoice
+		StrProperty		InValue
+	Function /Script/SB.SBCheatManager:SBSnapShot
+		StrProperty		SnapShotName
+Class /Script/SB.SBBlueprintLibrary
+	Function /Script/SB.SBBlueprintLibrary:SetDroneBodyMeshName
+Class /Script/SB.SBAutomationBlueprintFunctionLibrary
+Function /Script/SB.SBNetworkPlayerController:ServerRequest_ActorEquipBodySuit
+	Uint32	InActorGUID
+	Name	inBodySuitItemAlias
+Function /Script/SB.SBBlueprintLibrary:GetEquipLilyMeshAssetPath
+Function /Script/Engine.VisualLoggerKismetLibrary:LogText
+DataTable /Game/Local/Data/EquipmentTable.EquipmentTable
+	"BS_Green_Suit"
+	"ID": 40002,
+	"Type": "ESBEquipmentType::EquipmentType_Body",
+	"MountingResourcePath": "/Game/Art/Character/PC/CH_P_EVE_09/CH_P_EVE_09.CH_P_EVE_09",
+DataTable /Game/Local/Data/ItemEquipableTable.ItemEquipableTable
+Enum /Script/SB.ESBEquipmentType
+	EquipmentType_Hair1	5
+	EquipmentType_Body	13
+Enum /Script/SB.ESBEquipmentSubType
+	EquipmentSubType_None	0
+ScriptStruct /Script/SB.SBEquipmentTableProperty
+	has type, subtype, etc
+SBEquipmentActor /Script/SB.Default__SBEquipmentActor
+SkeletalMeshComponent /Script/SB.Default__SBEquipmentActor:SkeletalMeshComponent
+	Functions
+		SetSkeletalMesh
+DataTable
+	check all
+Class /Script/SB.SBPlayerInputManager
+	may be used to temporarily disable controls
+
+Class /Script/SB.SBSaveData
+Class /Script/SB.SBSaveGame
+Class /Script/SB.SBSaveManager
+Class /Script/SB.SBSaveVolume
+
+TODO
+		ServerRequest_ActorEquipBodySuit
+		regular replace + push to AttachChildren
+			child:AttachToComponent( eve.Mesh, FAttachmentTransformRules.KeepRelativeTransform )
+		✅ Вариант A — подмена через существующий mesh (РЕАЛЬНО)
+			Найти оригинальный SkeletalMesh Eve
+			Подменить его LOD / render data / sections
+			Оставить:
+			тот же USkeletalMesh object
+			тот же Skeleton
+			тот же AnimBP
+			Менять геометрию, а не объект
+			📌 Именно так работают:
+			“nude mods”
+			body reshapes
+			texture swaps
+Function /Script/Engine.KismetMaterialLibrary:CreateDynamicMaterialInstance
+Class /Script/ClothingSystemRuntimeCommon.ClothingAssetCommon

@@ -1,0 +1,160 @@
+local world = GetWorld()
+local cls = FindFirstOf('BP_EnemySoldier_C')
+world:SpawnActor(cls, location, rotation)
+
+Stellar Blade Modding Guide | Character Model Editing Full Workflow (2025)
+	https://www.youtube.com/watch?v=Ul4lyLVcqpc
+
+Find non-main characters:
+	FindAllOf("CH_NPC_Adam_01_Blueprint_C")
+	FindAllOf("CH_NPC_01_Blueprint_C")
+	FindAllOf("CH_Drone_BP_C")
+	/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:Event_ChangeBattleState
+	/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:NotifyBP_FinishedLevelSequence
+	/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C
+		Character hooks registered for it
+	/Script/Engine.PlayerController:ClientRestart
+	[BPModLoaderMod] Actor: ModActor_C /Game/Art/BG/WorldMap/Dungeon_P/AltesLab_P.AltesLab_P:PersistentLevel.ModActor_C_2147482000
+	SB\Content\Paks\~mods\Naik Horns\AiK_NaiK_Horn_7525.dekcns.json
+
+2️⃣ How UE4SS mods like CNS do it
+	CNS mod does not create new classes. What it does:
+	Loads SkeletalMesh and Material assets from .pak file
+	Adds them to existing arrays / DataTables (like SuitList: TArray<FSuitData>)
+	Hooks the UI menu (WBP_NanosuitMenu) to read the new entries
+	Swaps meshes on the player at runtime via the game’s existing functions
+	New Model + Material → FSuitData → TArray → UI Menu → SwapMesh(Player)
+	code
+		local suitData = FSuitData()
+		suitData.Name = "MyNewSuit"
+		suitData.Mesh = LoadObject("/Game/MyMod/MySuitMesh.MySuitMesh")
+		suitData.Material = LoadObject("/Game/MyMod/MySuitMat.MySuitMat")
+
+		-- Add to suit list
+		PlayerSuitList:Add(suitData)
+	If you know which SkeletalMeshComponent the player uses:
+		local player = GetPlayerPawn()
+		local comp = player:GetMeshComponent() -- whatever the skeleton component is
+		comp:SetSkeletalMesh(myNewMesh)
+		comp:SetMaterial(0, myNewMaterial)
+
+modding 3d
+	https://www.youtube.com/watch?v=Ul4lyLVcqpc
+suit objects
+	https://youtu.be/Ul4lyLVcqpc?si=gHxWFsEiTjpKA7Qo&t=502
+
+
+Lua files access
+	read file
+		local f, err = io.open('C:/temp/test.txt', 'r')
+		if not f then
+			error(err)
+		end
+		local content = f:read('*a')
+		f:close()
+		print(content)
+	write file
+		local f, err = io.open('C:/temp/out.txt', 'w')
+		if not f then
+			error(err)
+		end
+		f:write('Hello from UE4SS\n')
+		f:close()
+Kismet System lib
+	https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/SystemLibrary?application_version=4.27
+	get_object_name
+	get_outer_object
+	get_path_name
+	get_platform_user_dir
+	get_platform_user_name
+	get_project_content_directory
+	get_project_directory
+	get_system_path
+	is_valid
+	is_valid_class
+	load_asset_blocking
+	load_class_asset_blocking
+	normalize_filename
+UE4
+	loading pak files at runtime
+		https://dev.epicgames.com/community/learning/knowledge-base/D7nL/unreal-engine-primer-loading-content-and-pak-files-at-runtime
+
+
+jump multiple times
+	local prop = chars.eve:SetPropertyValue('JumpMaxCount', 5)
+	logger.info('prop', prop)
+
+
+launch some function
+	local func = StaticFindObject('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:AddBlood')
+	logger.inspect_object('func', func, true)
+	logger.debug('type 1: ', func:type())
+	logger.debug('type 2: ', type(func))
+	logger.debug('typ3 3: ', func:GetClass())
+	local mesh_1_name		= func(chars.eve, 1.0, 10.0)
+	logger.debug('mesh_1_name', mesh_1_name)
+
+
+get steam ID
+	Канонический путь в UE:
+		PlayerController
+		PlayerState
+		UniqueId (FUniqueNetIdRepl)
+	Через OnlineSubsystemSteam
+		IOnlineSubsystem::Get()->GetIdentityInterface()
+	Преобразование в SteamID64
+
+	В C++ это выглядит примерно так:
+		APlayerController* PC = GetWorld()->GetFirstPlayerController();
+		APlayerState* PS = PC->PlayerState;
+		PS->GetUniqueId()->ToString();
+
+	где взять
+		Function /Script/SB.SBNetworkPlayerController:ClientBroadcast_RegisterSaveGame
+
+	get through filesystem
+		76561199024359147
+		Вычтем стандартную константу:
+			STEAMID64_BASE = 76561197960265728
+		Разница:
+			76561199024359147
+			-76561197960265728
+			=1064093419
+
+directly read memory
+	c code
+		// memread.c
+		#include <lua.h>
+		#include <lauxlib.h>
+		#include <stdint.h>
+
+		static int l_read_memory(lua_State* L)
+		{
+			uintptr_t addr = (uintptr_t)lua_tointeger(L, 1);
+			size_t size    = (size_t)lua_tointeger(L, 2);
+
+			lua_pushlstring(L, (const char*)addr, size);
+			return 1;
+		}
+
+		static const luaL_Reg memread_lib[] = {
+			{"read", l_read_memory},
+			{NULL, NULL}
+		};
+
+		__declspec(dllexport)
+		int luaopen_memread(lua_State* L)
+		{
+			luaL_newlib(L, memread_lib);
+			return 1;
+		}
+	lua code
+		local mem = require('memread')
+		mem.read(0x12345678, 8)
+	compile
+			cd D:\Programs\lua
+			gendef lua54.dll
+			dlltool   -d lua54.def   -l liblua54.a
+
+			cd SNS
+			x86_64-w64-mingw32-gcc   -shared   -o ./scripts/research/memread.dll   ./scripts/research/memread.c   -I D:\Programs\lua    -L D:\Programs\lua   -llua54
