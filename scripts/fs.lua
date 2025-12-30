@@ -64,7 +64,6 @@ function M.mod_dir__get()
 
 	local scripts_dir	= path.dirname(path.dirname(script_file))
 	local mod_dir		= path.join(scripts_dir, '../')
-	logger.debug('mod_dir', mod_dir)
 
 	return mod_dir
 end

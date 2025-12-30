@@ -9,15 +9,10 @@ Notes:
 local json	= require('dkjson')
 local path	= require('path')
 
-local kismet_lib	= StaticFindObject('/Script/Engine.Default__KismetSystemLibrary')	-- docs:  https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/SystemLibrary?application_version=4.27
-local paths_lib		= StaticFindObject('/Script/Engine.Default__BlueprintPathsLibrary')	-- docs:  https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/Paths?highlight=paths&application_version=4.27#unreal.Paths
-
 local enums			= require('enums')
 local fs			= require('fs')
-local logger		= require('logger')
 local strings		= require('strings')
 local tables		= require('tables')
-local ue_objects	= require('ue_objects')
 
 
 

@@ -17,6 +17,12 @@ Find non-main characters:
 	[BPModLoaderMod] Actor: ModActor_C /Game/Art/BG/WorldMap/Dungeon_P/AltesLab_P.AltesLab_P:PersistentLevel.ModActor_C_2147482000
 	SB\Content\Paks\~mods\Naik Horns\AiK_NaiK_Horn_7525.dekcns.json
 
+Hook to game loaded
+	RegisterHook("/Script/Engine.PlayerController:ClientRestart", function()	-- on game start in main menu, after game load
+		logger.info('game restarted, reading mods')
+		read_mods_and_save_file_from_disk()	-- load early to see errors early be
+	end)
+
 2️⃣ How UE4SS mods like CNS do it
 	CNS mod does not create new classes. What it does:
 	Loads SkeletalMesh and Material assets from .pak file
