@@ -1,4 +1,4 @@
-local KismetLib	= StaticFindObject('/Script/Engine.Default__KismetSystemLibrary' )	-- docs:  https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/SystemLibrary?application_version=4.27
+local kismet_lib = StaticFindObject('/Script/Engine.Default__KismetSystemLibrary')	-- docs:  https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/SystemLibrary?application_version=4.27
 
 local enums		= require('enums')
 local logger	= require('logger')
@@ -48,8 +48,8 @@ TODO:
 	support other characters
 ]]
 function M.Characters.parse(character)
-	local character_path		= KismetLib:GetPathName(character):ToString()
-	local character_object_name	= KismetLib:GetObjectName(character):ToString()
+	local character_path		= kismet_lib:GetPathName(character):ToString()
+	local character_object_name	= kismet_lib:GetObjectName(character):ToString()
 	local is_adam				= strings.starts_with(character_object_name,	'CH_NPC_Adam_01_Blueprint')
 	local is_lily				= strings.starts_with(character_object_name,	'CH_NPC_01_Blueprint')
 	local is_drone				= strings.starts_with(character_object_name,	'CH_Drone_BP')
@@ -67,7 +67,7 @@ function M.Characters.parse(character)
 	elseif is_drone then
 		return {[enums.Characters.drone]	= character}
 	end
-	logger.warn('unsupported character', character_object_name)
+	-- logger.warn('unsupported character', character_object_name)
 	return {}
 end
 
@@ -82,22 +82,27 @@ function M.Characters.replace_mesh(
 	local retries_max		= 10
 	local retry_current		= 0
 
-	local function _replace_mesh()
-		local mesh_component = character:GetSBSkeletalMeshComponent(mesh_slot)
-		logger.debug('mesh_component', mesh_component)
-		logger.debug('new_mesh_asset', new_mesh_asset)
-		if not mesh_component:IsValid() or not new_mesh_asset:IsValid() then
+	local function _replace_mesh(skip_objects_validation)
+		local mesh_component	= character:GetSBSkeletalMeshComponent(mesh_slot)
+		local some_obj_invalid	= not skip_objects_validation and (not mesh_component:IsValid() or not new_mesh_asset:IsValid())
+		if some_obj_invalid then
 			error('some are invalid')
 		end
 		mesh_component:SetSkeletalMesh(new_mesh_asset, true)
 		mesh_component:ResetOverrideMaterials()		-- otherwise would leave old materials
 	end
 
-	local function _replace_mesh_after()
-		ExecuteWithDelay(1000, function()	-- wait until mesh component will be loaded
+	--[[
+	Don't use it now, but left in case if prev approach would be unstable.
+	]]
+	local function _replace_mesh_after(skip_delay_initially)	-- luacheck: ignore 211	-- unused func
+		local delay = 1000
+		if skip_delay_initially then
+			delay = 0
+		end
+		ExecuteWithDelay(delay, function()	-- wait until mesh component will be loaded
 			ExecuteInGameThread(function()	-- don't crash so much
 				retry_current = retry_current + 1
-				logger.debug('_replace_mesh_after()  executing async', retry_current)
 
 				local success, result = pcall(_replace_mesh)
 				if not success then
@@ -106,15 +111,19 @@ function M.Characters.replace_mesh(
 
 				local can_retry = retry_current <= retries_max
 				if not success and can_retry then
-					logger.debug('_replace_mesh_after()  scheduling later')
+					logger.warn('_replace_mesh_after()  scheduling later after expected error')
 					_replace_mesh_after()
 				end
+
+				logger.error('_replace_mesh_after()  were unable to launch  _replace_mesh()')
 			end)
 
 		end)
 	end
 
-	_replace_mesh_after()
+	local skip_objects_validation = true
+	_replace_mesh(skip_objects_validation)
+	-- _replace_mesh_after(true)	-- launch only if works unstable
 end
 
 

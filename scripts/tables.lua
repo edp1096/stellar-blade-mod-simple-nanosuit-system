@@ -59,9 +59,9 @@ end
 
 
 --[[
-Find first matching result in table on which "function_" will return "true".
+Filter all results into a new.
 ]]
-function M.find(table, function_)
+function M.filter(table, function_)
 	for _, value in pairs(table) do
 		if function_(value) then
 			return value

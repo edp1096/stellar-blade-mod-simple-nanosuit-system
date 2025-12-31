@@ -1,10 +1,11 @@
 local config		= require('config')	-- read it before importing from "packages"
 local assets		= require('assets')
 local characters	= require('characters')
+local enums			= require('enums')
 local logger		= require('logger')
 local saves			= require('saves')
 local tables		= require('tables')
-local ue_objects	= require('ue_objects')
+local ue			= require('ue')
 
 
 
@@ -17,16 +18,13 @@ local function read_mods_and_save_file_from_disk(reload)
 	if reload or not save or not mods_info then
 		save		= saves.SavedSettings.read()
 		mods_info	= assets.mods_info__find()
-		logger.info('save', ue_objects.inspect_stringify(save))
+		logger.info('save', ue.inspect_stringify(save))
 	end
 end
 
 
 
 local function apply_mod_to_character(character_name, character)
-	-- local save		= saves.SavedSettings.read()	-- using global ones
-	-- local mods_info	= assets.mods_info__find()
-
 	if not save[character_name] then
 		logger.warn(('no save for %s,  skipping applying nanosuit'):format(character_name))
 		return
@@ -52,7 +50,6 @@ local function apply_mod_to_character(character_name, character)
 		end
 		::endmodfitloops::
 	end
-	logger.info('mod_fit_info', ue_objects.inspect_stringify(mod_fit_info))
 
 	local mod_fit_missing = mod_fit_info == nil
 	if mod_fit_missing then
@@ -76,6 +73,8 @@ local function apply_mod_to_character(character_name, character)
 
 	local asset_data	= assets.UEAssetData.from_path(save_current.UseOutfit)
 	local asset			= asset_data:load()
+
+	logger.info('will apply mod to character', character_name)
 
 	characters.Characters.replace_mesh(character, asset, mod_fit_info.FitMeshType)
 end
@@ -113,90 +112,32 @@ end)
 
 
 
--- NotifyOnNewObject('/Script/SB.SBCharacter', function(character_raw)
--- 	logger.info('SBCharacter loaded')
--- 	ExecuteInGameThread(function()	-- it crashes often if execute not in game thread
--- 		read_mods_and_save_file_from_disk()
--- 		local character_parsed = characters.Characters.parse(character_raw)
+local function _replace_eve_mesh()
+	ExecuteInGameThread(function()	-- crashes otherwise
+		read_mods_and_save_file_from_disk()
+		local characters_parsed = characters.Characters.find()
+		apply_mod_to_character(enums.Characters.eve, characters_parsed[enums.Characters.eve])
+	end)
+end
 
--- 		for character_name, character in pairs(character_parsed) do
--- 			apply_mod_to_character(character_name, character)
--- 		end
--- 	end)
--- end)
+local _replace_eve_mesh__debounced = ue.debounce(_replace_eve_mesh, 500)
 
 
 
--- RegisterHook('/Script/SB.SBCharacter:NotifyBP_SetMesh', function(self, result)
--- 	print('NotifyBP_SetMesh')
--- end)
--- RegisterHook('/Script/SB.SBCharacter:NotifyBP_InitActor', function(self, result)
--- 	print('NotifyBP_InitActor')
--- end)
--- RegisterHook('/Script/SB.SBCharacter:NotifyBP_PostInit', function(self, result)
--- 	print('NotifyBP_PostInit')
--- end)
--- RegisterHook('/Script/SB.SBCharacter:NotifyBP_FinishedLevelSequence', function(self, result)
--- 	print('NotifyBP_FinishedLevelSequence')
--- end)
-RegisterHook('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:NotifyBP_SetMesh', function(self, result)
-	print('NotifyBP_SetMesh')
-end)
--- RegisterHook('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:NotifyBP_InitActor', function(self, result)
--- 	print('NotifyBP_InitActor')
--- end)
--- RegisterHook('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:NotifyBP_PostInit', function(self, result)
--- 	print('NotifyBP_PostInit')
--- end)
--- RegisterHook('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:NotifyBP_FinishedLevelSequence', function(self, result)
--- 	print('NotifyBP_FinishedLevelSequence')
--- end)
-
-
-
--- RegisterHook('/Script/Engine.PlayerController:SwitchLevel', function()	-- on game start in main menu, after game load
--- 	print('SwitchLevel')
--- end)
--- RegisterHook('/Script/Engine.PlayerController:RestartLevel', function()	-- on game start in main menu, after game load
--- 	print('RestartLevel')
--- end)
--- RegisterHook('/Script/Engine.PlayerController:ClientCommitMapChange', function()	-- on game start in main menu, after game load
--- 	print('ClientCommitMapChange')
--- end)
--- RegisterHook('/Script/Engine.PlayerController:ClientRestart', function()	-- on game start in main menu, after game load
--- 	print('ClientRestart')
--- end)
-
-RegisterHook('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:ReceiveBeginPlay', function()	-- on game start in main menu, after game load
-	print('EVE ReceiveBeginPlay')
-end)
-
-RegisterHook('/Script/Engine.Actor:EnableInput', function()
-	print('EnableInput')
-end)
-RegisterHook('/Script/Engine.PlayerController:SetCinematicMode', function()
-	print('SetCinematicMode')
+ue.register_blueprint_hook('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:NotifyBP_SetMesh', function()
+	--[[
+	Cannot parse args well - they're "RemoteUnrealParam".
+		So we don't know where body, when hair will be set.
+		So just debounce it.
+	Didn't hook with "NotifyOnNewObject('/Script/SB.SBCharacter')"
+		bc meshes are replaced after some time after new char created.
+	]]
+	_replace_eve_mesh__debounced()
 end)
 
 
 
-
-
-
--- RegisterHook(
---     "/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:Event_ChangeBattleState",
---     function(Context, ...)
---         OnChangeBattleState(Context, ...)
--- OutfitRefreshFlag = true
---     end
--- )
-
-
-
--- RegisterHook(
--- 	"/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:NotifyBP_FinishedLevelSequence",
--- 	function(Context)
--- 		ExtraLog("NotifyBP_FinishedLevelSequence called")
--- 		-- OutfitRefreshFlag = true
--- 	end
--- )
+-- ue.register_blueprint_hook('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:Event_ChangeBattleState', function(...)
+-- 	print('Blueprint_C:Event_ChangeBattleState', ...)
+-- -- CNS refreshed state on it
+-- end)

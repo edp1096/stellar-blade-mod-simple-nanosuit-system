@@ -4,6 +4,8 @@ Helper functions to work with Unreal Engine objects.
 
 local kismet_lib = StaticFindObject('/Script/Engine.Default__KismetSystemLibrary')	-- docs:  https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/SystemLibrary?application_version=4.27
 
+local logger = require('logger')
+
 
 
 local M = {}
@@ -92,6 +94,63 @@ end
 function M.is_fname_userdata(value)
 	return tostring(value):find('FNameUserdata')
 end
+
+
+
+--[[
+Blueprints are lazy-loaded, so may be not available on mod load.
+]]
+function M.register_blueprint_hook(hook_path, function_callback)
+	local hooked		= false
+	local retries		= 0
+	local RETRIES_MAX	= 60
+	local RETRY_TIME	= 500
+
+	local function try_register_hook()
+		if hooked then
+			return
+		end
+
+		retries = retries + 1
+
+		local obj = StaticFindObject(hook_path)
+		if obj then
+			RegisterHook(hook_path, function_callback)
+			hooked = true
+			return
+		end
+
+		if retries < RETRIES_MAX then
+			ExecuteWithDelay(RETRY_TIME, try_register_hook)
+		else
+			logger.warn('Failed to hook NotifyBP_FinishedLevelSequence (timeout)')
+		end
+	end
+
+	ExecuteWithDelay(RETRY_TIME, try_register_hook)
+end
+
+
+
+function M.debounce(function_, wait_ms)
+	if not wait_ms then
+		wait_ms = 500	-- half of second
+	end
+	local launches_amount = 0
+
+	return function()
+		launches_amount = launches_amount + 1
+
+		ExecuteWithDelay(wait_ms, function()
+			launches_amount = launches_amount - 1
+			if launches_amount > 0 then
+				return
+			end
+			function_()
+		end)
+	end
+end
+
 
 
 
