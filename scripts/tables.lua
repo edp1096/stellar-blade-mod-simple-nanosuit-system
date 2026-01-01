@@ -18,7 +18,7 @@ end
 
 
 
-function M.is_list_of(function_to_check_each_value, table)
+function M.is_list_of(table, function_to_check_each_value)
 	assert(type(function_to_check_each_value) == 'function', 'function_to_check_each_value must be a function')
 
 	if type(table) ~= 'table' then
@@ -38,12 +38,34 @@ end
 
 
 
+function M.is_list_of_or_nil(table, function_to_check_each_value)
+	if table == nil then
+		return true
+	end
+
+	local result = M.is_list_of(table, function_to_check_each_value)
+	return result
+end
+
+
+
 -- Added a separate function to don't create "booleans.lua" for one "is_boolean" func
 function M.is_list_of_booleans(table)
 	local function _is_boolean(value)
 		return type(value) == 'boolean'
 	end
-	return M.is_list_of(_is_boolean, table)
+	return M.is_list_of(table, _is_boolean)
+end
+
+
+
+function M.is_list_of_booleans_or_nil(table)
+	if table == nil then
+		return true
+	end
+
+	local result = M.is_list_of_booleans(table)
+	return result
 end
 
 
@@ -53,13 +75,34 @@ function M.is_list_of_numbers(table)
 	local function _is_number(value)
 		return type(value) == 'number'
 	end
-	return M.is_list_of(_is_number, table)
+	return M.is_list_of(table, _is_number)
+end
+
+
+
+function M.is_list_of_numbers_or_nil(table)
+	if table == nil then
+		return true
+	end
+
+	local result = M.is_list_of_numbers(table)
+	return result
+end
+
+
+
+function M.length(table)
+	local amount = 0
+	for _ in pairs(table) do
+		amount = amount + 1
+	end
+	return amount
 end
 
 
 
 --[[
-Filter all results into a new.
+Filter all results into a new table.
 ]]
 function M.filter(table, function_)
 	for _, value in pairs(table) do
@@ -67,7 +110,7 @@ function M.filter(table, function_)
 			return value
 		end
 	end
-	return nil
+	return {}
 end
 
 
@@ -77,19 +120,34 @@ Return new table with numeric indexes
 	by iterating over values with numberic indexes of existing table,
 	applying "function" to each of them.
 Alternative to Python's "list.map()".
+TODO:
+	replace to just "map"
 ]]
-function M.list_map(list_table, function_)
+function M.map(table, function_)
 	local result = {}
-	for index = 1, #list_table do
-		result[index] = function_(list_table[index], index)
+	for key, value in pairs(table) do
+		result[key] = function_(value, key)
 	end
 	return result
 end
 
 
 
-function M.list_has_value(list_table, value)
-	for _, value_current in ipairs(list_table) do
+--[[
+Get new list-like table with values of passed table.
+]]
+function M.values(table_)	-- "table_" to don't shadow "table" library which will be used here
+	local result = {}
+	for _, value in pairs(table_) do
+		table.insert(result, value)
+	end
+	return result
+end
+
+
+
+function M.has_value(table, value)
+	for _, value_current in pairs(table) do
 		local present_in_list = value_current == value
 		if present_in_list then
 			return true
@@ -131,7 +189,7 @@ end
 
 
 --[[
-Prefer using "logger.inspect_object()", it call this if needed.
+Prefer using "logger.inspect()", it call this if needed.
 ]]
 function M.inspect_stringify(value, indent, visited, tostring_func)
 	indent	= indent or ''

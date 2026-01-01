@@ -93,7 +93,7 @@ jump multiple times
 
 launch some function
 	local func = StaticFindObject('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:AddBlood')
-	logger.inspect_object('func', func, true)
+	logger.inspect('func', func, true)
 	logger.debug('type 1: ', func:type())
 	logger.debug('type 2: ', type(func))
 	logger.debug('typ3 3: ', func:GetClass())

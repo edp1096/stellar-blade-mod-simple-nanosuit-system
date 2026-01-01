@@ -20,4 +20,14 @@ end
 
 
 
+--[[
+Technically it's number too.
+Just don't create extra "booleans" module for one check.
+]]
+function M.is_boolean(unknown_value)
+	return type(unknown_value) == 'boolean'
+end
+
+
+
 return M

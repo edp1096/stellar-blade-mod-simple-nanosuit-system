@@ -35,17 +35,22 @@ Inspecting Eve's obj
 			EquipmentDataList				("","LightSword1","","","","Hair_002_Part1","Hair_002_Part2","","Earring_003","FaceAccessory_012","","","","BS_01")
 			bUseSliceSkeletalMesh			False
 			SliceSkeletalMeshDataAsset		None
-			SBPonytail						SBPonytail
-			SBPonytailShort					SBPonytailShort
-			SBAccSlot3						SBAccSlot3
-			SBAccSlot1						SBAccSlot1
-			Mesh_Face						Mesh_Face
-			SBHair							SBHair
-			ACC_HairPin						ACC_HairPin
-			isDronHide						False
-			HairGravity							0.000000
-			HairStabiliser					False
+			SBPonytail						SBPonytail			ObjectProperty
+			SBPonytailShort					SBPonytailShort		ObjectProperty
+			SBAccSlot3						SBAccSlot3			ObjectProperty
+			SBAccSlot1						SBAccSlot1			ObjectProperty
+			Mesh_Face						Mesh_Face			ObjectProperty
+			SBHair							SBHair				ObjectProperty
+			ACC_HairPin						ACC_HairPin			ObjectProperty		???
+			AssistanceSlot					AssistanceSlot		ObjectProperty		???
 			WeaponComponent					SBSkeletalMeshComponent'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482131.SBSkeletalMeshComponent_2147481305'
+			MeshInfoList					array with some data
+			bHidePonyTail					False
+			bShortPonyTail					False
+			bApplyShortPonyTailPhysics		False
+			isDronHide						False
+			HairGravity						0.000000
+			HairStabiliser					False
 			WeaponMaterials
 			DirtValue						0.000000
 			BloodValue						0.000000
@@ -68,6 +73,12 @@ Inspecting Eve's obj
 			bCustomOverrideClothPhysicsAsset	False
 			CustomOverrideClothPhysicsAssetPath	''
 			VisibilityHairOnlySequence		True
+			bWalkingMode					False
+			bActiveCharacter				True
+			bTPSMode						False		when char is shooting
+			UnderWaterLinearDamping			20.0
+			UnderWaterAngularDamping		20.0
+			bUnderWater						False
 			Owner							SBNetworkPlayerController'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.SBNetworkPlayerController_2147482148'
 			Controller						SBNetworkPlayerController'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.SBNetworkPlayerController_2147482148'
 			PlayerState						SBNetworkPlayerState'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.SBNetworkPlayerState_2147482147'
@@ -79,6 +90,7 @@ Inspecting Eve's obj
 				get them like this:
 					StaticFindObject('/Script/SB.SBCharacter:GetCameraZoom')
 			GetBodyMeshName
+			GetPonytailMeshName
 			GetCameraZoom
 			GetCamOverrideFovMode
 			NotifyBP_SetMesh
@@ -122,6 +134,8 @@ Inspecting Eve's obj
 	UniqueId	76561199024359147
 	PawnPrivate	CH_P_EVE_01_Blueprint_C'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127'
 	ActorNetGuid	0
+SBSkeletalMeshComponent /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.Mesh_Face
+	SkeletalMesh		SkeletalMesh'/Game/Art/Character/PC/CH_P_EVE_Head/CH_P_EVE_Face_Jali3.CH_P_EVE_Face_Jali3'		ObjectProperty
 /Script/SB.SBCheatManager
 		Seems functions don't work at all
 	Function /Script/SB.SBCheatManager:SBChangeBody
@@ -224,3 +238,63 @@ TODO
 			texture swaps
 Function /Script/Engine.KismetMaterialLibrary:CreateDynamicMaterialInstance
 Class /Script/ClothingSystemRuntimeCommon.ClothingAssetCommon
+
+
+Testing saves
+	{
+		"UniqueFitID": "Repacked Fishnet Bodysuit",
+		"OutfitMesh": "/Game/CNSRepacked/6138f22cbccb9844/Art/Character/PC/CH_P_EVE_InnerSuit/CH_P_EVE_InnerSuit.CH_P_EVE_InnerSuit"
+	}
+	{
+		"UniqueFitID": "AiK_MAsiaFace_15681",
+		"OutfitMesh": "/Game/OutfitMods/AiK_Naik_Makeup/Face/AiK_Face_MA1.AiK_Face_MA1"
+	}
+	{
+		"UniqueFitID": "AiK_SplitHairDB_V3_CNS_6851",
+		"OutfitMesh": "/Game/OutfitMods/AiK_Split_Hair/DB_V3/CH01_NM.CH01_NM"
+	}
+	{
+		"UniqueFitID": "AiK_NaiK_Horn_7525",
+		"OutfitMesh": "/Game/OutfitMods/AiK_ACC/Horn/Horn_D1.Horn_D1"
+	}
+	{
+		"UniqueFitID": "FaceAccessory_001",
+		"OutfitMesh": "/Game/Art/Character/PC/00_ACC/ACC_GLA_01/ACC_GLA_01M.ACC_GLA_01M"
+	}
+
+
+need to find glasses controller on eve
+	SBSkeletalMeshComponent /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147456387.SBSkeletalMeshComponent_2147454378
+			looks like glasses
+		AttachSocketName		Bip001-Head		NameProperty
+		AttachParent			CharacterMesh0	ObjectProperty
+		SkeletalMesh			SkeletalMesh'/Game/Art/Character/PC/00_ACC/ACC_GLA_12/ACC_GLA_12M.ACC_GLA_12M'	ObjectProperty
+	SBSkeletalMeshComponent /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147456387.SBSkeletalMeshComponent_2147455561
+		AnimClass		CH_W_Sword_01_AnimBP_C'/Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147456387.SBSkeletalMeshComponent_2147455561.CH_W_Sword_01_AnimBP_C_2147455560'
+			so it's sword too ?
+	SBSkeletalMeshComponent /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147456387.SBPonytailShort
+		AttachSocketName		Bip001-Head		NameProperty
+		AttachParent			CharacterMesh0	ObjectProperty
+	SBSkeletalMeshComponent /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147456387.SBAccSlot3
+			looks like a wing
+		SkeletalMesh		None
+		AttachSocketName	SC_Wing
+		AttachParent		CharacterMesh0
+	SBSkeletalMeshComponent /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147456387.SBAccSlot1
+			looks like something near ears
+		AttachSocketName		Bip001-Head		NameProperty
+		AttachParent			CharacterMesh0	ObjectProperty
+	SBSkeletalMeshComponent /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147456387.SBHair
+		AttachSocketName		Bip001-Head		NameProperty
+		AttachParent			CharacterMesh0	ObjectProperty
+	SBSkeletalMeshComponent /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147456387.CharacterMesh0
+			it's body
+		AttachParent		CollisionCylinder
+	SBSkeletalMeshComponent /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147456387.ACC_HairPin
+			seems to be reallyh hairpin
+		AttachSocketName		SC_HairACC		NameProperty
+		AttachParent			CharacterMesh0	ObjectProperty
+		SkeletalMesh			SkeletalMesh'/Game/Art/Character/Weapon/Sword/CH_ACC_HairPin/CH_ACC_HairPin.CH_ACC_HairPin'
+	bShortPonyTail	BoolProperty
+		on main character seems to switch ponytail modes ?
+	bApplyShortPonyTailPhysics

@@ -29,7 +29,7 @@ function M.log(level, ...)
 end
 
 
-function M.inspect_object(msg, obj)
+function M.inspect(msg, obj)
 	local ue = require('ue')	-- avoid recursive imports
 
 	local obj_str = ue.inspect_stringify(obj)	-- supports also standard objects

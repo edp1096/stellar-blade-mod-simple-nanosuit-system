@@ -29,7 +29,7 @@ end
 
 
 --[[
-Prefer using "logger.inspect_object()", it call this if needed.
+Prefer using "logger.inspect()", it call this if needed.
 ]]
 function M.inspect_stringify(value, indent, visited)
 	indent	= indent or ''
@@ -62,7 +62,7 @@ end
 
 
 --[[
-Prefer using "logger.inspect_object()", it call this if needed.
+Prefer using "logger.inspect()", it call this if needed.
 ]]
 function M.inspect(ue_obj)
 	local success, result = pcall(function()
@@ -101,24 +101,27 @@ end
 Blueprints are lazy-loaded, so may be not available on mod load.
 ]]
 function M.register_blueprint_hook(hook_path, function_callback)
-	local hooked		= false
 	local retries		= 0
 	local RETRIES_MAX	= 60
 	local RETRY_TIME	= 500
 
 	local function try_register_hook()
-		if hooked then
-			return
-		end
-
 		retries = retries + 1
 
-		local obj = StaticFindObject(hook_path)
-		if obj then
+		--[[
+		Tried doing:
+			local obj = StaticFindObject(hook_path)
+			if obj then
+		But it still could lead to error.
+		]]
+		local success, _ = pcall(function()
 			RegisterHook(hook_path, function_callback)
-			hooked = true
+		end)
+
+		if success then
 			return
 		end
+		logger.debug('<<<<<<<<<<<<<<<<<<<<< expected error')
 
 		if retries < RETRIES_MAX then
 			ExecuteWithDelay(RETRY_TIME, try_register_hook)

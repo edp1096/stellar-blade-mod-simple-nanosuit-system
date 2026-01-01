@@ -9,10 +9,9 @@ Notes:
 local json	= require('dkjson')
 local path	= require('path')
 
-local enums			= require('enums')
-local fs			= require('fs')
-local strings		= require('strings')
-local tables		= require('tables')
+local fs		= require('fs')
+local strings	= require('strings')
+local tables	= require('tables')
 
 
 
@@ -50,13 +49,12 @@ end
 
 
 function M.SavedSettings.new(data_raw)
-	assert(tables.is_table_or_nil(data_raw[enums.Characters.eve]),		('SavedSettings[%s] should be string or omitted'):format(data_raw[enums.Characters.eve]))
-	assert(tables.is_table_or_nil(data_raw[enums.Characters.lily]),		('SavedSettings[%s] should be string or omitted'):format(data_raw[enums.Characters.lily]))
-	assert(tables.is_table_or_nil(data_raw[enums.Characters.adam]),		('SavedSettings[%s] should be string or omitted'):format(data_raw[enums.Characters.adam]))
-	assert(tables.is_table_or_nil(data_raw[enums.Characters.drone]),	('SavedSettings[%s] should be string or omitted'):format(data_raw[enums.Characters.drone]))
-	local data = {
-		[enums.Characters.eve]	= data_raw[enums.Characters.eve] and M.Replacement.new(data_raw[enums.Characters.eve]),
-	}
+	assert(tables.is_list_of(data_raw, tables.is_table), 'SavedSettings should contain list of Replacement or empty list')
+
+	local data = tables.map(data_raw, function(data_raw__current)
+		return  M.Replacement.new(data_raw__current)
+	end)
+
 	return setmetatable(data, M.SavedSettings)
 end
 
@@ -68,21 +66,14 @@ M.Replacement.__index	= M.Replacement
 
 
 function M.Replacement.new(data_raw)
-	assert(strings.is_string(data_raw.UseFitId),	'Replacement.UseFitId is required string')
-	assert(strings.is_string(data_raw.UseOutfit),	'Replacement.UseOutfit is required string')
-	-- assert(numbers.is_number_or_nil(data_raw.UseOutfitData),	'Replacement.UseOutfitData should be number or omitted')
-
-	if data_raw.UseOutfit and not data_raw.UseFitId then
-		assert(false, 'Replacement.UseFitId must be specified if Replacement.UseOutfit was')
-	end
-	-- if data_raw.UseOutfitData and not data_raw.UseFitId then
-	-- 	assert(false, 'Replacement.UseFitId must be specified if Replacement.UseOutfitData was')
-	-- end
+	assert(strings.is_string(data_raw.UniqueFitID),	'Replacement.UniqueFitID is required string')	-- same case as in "dekcns.json"
+	assert(strings.is_string(data_raw.OutfitMesh),	'Replacement.OutfitMesh is required string')
 
 	local data = {
-		UseFitId	= data_raw.UseFitId,
-		UseOutfit	= data_raw.UseOutfit,
+		UniqueFitID	= data_raw.UniqueFitID,
+		OutfitMesh	= data_raw.OutfitMesh,
 	}
+
 	return setmetatable(data, M.Replacement)
 end
 
