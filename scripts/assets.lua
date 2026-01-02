@@ -154,14 +154,14 @@ function M.ModOutfit.new(data_raw)
 		data_raw.FitMeshType = M.FitMeshType.Body
 	end
 	if data_raw.MeshSubType then
-		data_raw.FitMeshType = data_raw.MeshSubType
+		data_raw.FitMeshType = data_raw.MeshSubType	-- usually we merge "Ponytail" to "FitMeshType"
 	end
 
 	assert(tables.has_value(M.FitMeshType, data_raw.FitMeshType),	('ModOutfit.FitMeshType must be one of %s, its "%s"'):format( json.encode(tables.values(M.FitMeshType)), data_raw.FitMeshType ))
 
 	local data = {
 		UniqueFitID		= data_raw.UniqueFitID,
-		CharacterID		= data_raw.CharacterID or M.CharacterID.eve,
+		CharacterID		= (data_raw.CharacterID or M.CharacterID.eve):upper(),
 		DisplayName		= data_raw.DisplayName or '',
 		Description		= data_raw.Description or '',
 		Requirement		= data_raw.Requirement or 'None',	-- TODO: validate according enum ?  Known values are: ["None"]

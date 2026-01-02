@@ -172,15 +172,32 @@ end
 
 --[[
 Merge any number of passed tables.
-Only values are preserved, keys ingored,
-	will set new keys from 0 to number of elements.
+Values with same keys will be overwritten.
 ]]
 function M.merge(...)
 	local result = {}
 	for i = 1, select('#', ...) do
-		local t = select(i, ...)
-		for _, v in ipairs(t) do
-			table.insert(result, v)
+		local table_current = select(i, ...)
+		for key, value in ipairs(table_current) do
+			result[key] = value
+		end
+	end
+	return result
+end
+
+
+
+--[[
+Merge any number of passed list-like tables.
+Only values are preserved, keys ingored,
+	will set new keys from 0 to number of elements.
+]]
+function M.list_merge(...)
+	local result = {}
+	for i = 1, select('#', ...) do
+		local table_current = select(i, ...)
+		for _, value in ipairs(table_current) do
+			table.insert(result, value)
 		end
 	end
 	return result
