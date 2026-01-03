@@ -300,36 +300,9 @@ Adam's mesh
 					had 2 instances at once
 				SBSkeletalMeshComponent /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_NPC_Adam_01_Blueprint_C_2147479806.CharacterMesh0
 	CH_NPC_Adam_01_Blueprint_Seq_C /Game/Art/Character/NPC/CH_NPC_Adam_01/Blueprints/CH_NPC_Adam_01_Blueprint_Seq.Default__CH_NPC_Adam_01_Blueprint_Seq_C
+			seq - is more for animation, while first one if for game
 		class
 			BlueprintGeneratedClass /Game/Art/Character/NPC/CH_NPC_Adam_01/Blueprints/CH_NPC_Adam_01_Blueprint_Seq.CH_NPC_Adam_01_Blueprint_Seq_C
 				for animations
 		SBSkeletalMeshComponent /Game/Art/Character/NPC/CH_NPC_Adam_01/Blueprints/CH_NPC_Adam_01_Blueprint_Seq.Default__CH_NPC_Adam_01_Blueprint_Seq_C:CharacterMesh0
 		SBSkeletalMeshComponent /Game/Art/Character/NPC/CH_NPC_Adam_01/Blueprints/CH_NPC_Adam_01_Blueprint_Seq.CH_NPC_Adam_01_Blueprint_Seq_C:Mesh_Face_GEN_VARIABLE
-
-
-
-Testing saves
-	{
-		"UniqueFitID": "Repacked Fishnet Bodysuit",
-		"OutfitMesh": "/Game/CNSRepacked/6138f22cbccb9844/Art/Character/PC/CH_P_EVE_InnerSuit/CH_P_EVE_InnerSuit.CH_P_EVE_InnerSuit"
-	}
-	{
-		"UniqueFitID": "k7_YoRHafy_SkyAceNSFW",
-		"OutfitMesh": "/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW.0_SkyAceNSFW"
-	}
-	{
-		"UniqueFitID": "AiK_MAsiaFace_15681",
-		"OutfitMesh": "/Game/OutfitMods/AiK_Naik_Makeup/Face/AiK_Face_MA1.AiK_Face_MA1"
-	}
-	{
-		"UniqueFitID": "AiK_SplitHairDB_V3_CNS_6851",
-		"OutfitMesh": "/Game/OutfitMods/AiK_Split_Hair/DB_V3/CH01_NM.CH01_NM"
-	}
-	{
-		"UniqueFitID": "AiK_NaiK_Horn_7525",
-		"OutfitMesh": "/Game/OutfitMods/AiK_ACC/Horn/Horn_D1.Horn_D1"
-	}
-	{
-		"UniqueFitID": "FaceAccessory_001",
-		"OutfitMesh": "/Game/Art/Character/PC/00_ACC/ACC_GLA_01/ACC_GLA_01M.ACC_GLA_01M"
-	}

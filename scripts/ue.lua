@@ -100,9 +100,11 @@ end
 --[[
 Blueprints are lazy-loaded, so may be not available on mod load.
 ]]
-function M.register_blueprint_hook(hook_path, function_callback)
+function M.register_blueprint_hook(hook_path, function_callback, retries_max)
+	if retries_max == nil then
+		retries_max = 60
+	end
 	local retries		= 0
-	local RETRIES_MAX	= 60
 	local RETRY_TIME	= 500
 
 	local function try_register_hook()
@@ -114,19 +116,19 @@ function M.register_blueprint_hook(hook_path, function_callback)
 			if obj then
 		But it still could lead to error.
 		]]
-		local success, _ = pcall(function()
+		local success, result = pcall(function()
 			RegisterHook(hook_path, function_callback)
 		end)
 
 		if success then
 			return
 		end
-		logger.debug('<<<<<<<<<<<<<<<<<<<<< expected error')
+		logger.warn('expected error setting hook', hook_path, result)
 
-		if retries < RETRIES_MAX then
+		if retries < retries_max then
 			ExecuteWithDelay(RETRY_TIME, try_register_hook)
 		else
-			logger.warn('Failed to hook NotifyBP_FinishedLevelSequence (timeout)')
+			logger.warn(('Failed to hook %s (timeout)'):format(hook_path))
 		end
 	end
 
@@ -141,15 +143,16 @@ function M.debounce(function_, wait_ms)
 	end
 	local launches_amount = 0
 
-	return function()
-		launches_amount = launches_amount + 1
+	return function(...)
+		local func_args	= table.pack(...)
+		launches_amount	= launches_amount + 1
 
 		ExecuteWithDelay(wait_ms, function()
 			launches_amount = launches_amount - 1
 			if launches_amount > 0 then
 				return
 			end
-			function_()
+			function_(table.unpack(func_args))
 		end)
 	end
 end

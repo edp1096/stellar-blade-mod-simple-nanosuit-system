@@ -30,4 +30,10 @@ end
 
 
 
+function M.is_boolean_or_nil(unknown_value)
+	return unknown_value == nil or type(unknown_value) == 'boolean'
+end
+
+
+
 return M

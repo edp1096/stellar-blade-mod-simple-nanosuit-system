@@ -10,6 +10,7 @@ local json	= require('dkjson')
 local path	= require('path')
 
 local fs		= require('fs')
+local numbers	= require('numbers')
 local strings	= require('strings')
 local tables	= require('tables')
 
@@ -49,11 +50,19 @@ end
 
 
 function M.SavedSettings.new(data_raw)
-	assert(tables.is_list_of(data_raw, tables.is_table), 'SavedSettings should contain list of Replacement or empty list')
+	assert(numbers.is_boolean_or_nil(data_raw.Enabled),							'SavedSettings.Enabled should contain list of Replacement or empty list')
+	assert(tables.is_list_of_or_nil(data_raw.Replacements, tables.is_table),	'SavedSettings.Replacements should contain list of Replacement or be an empty list')
 
-	local data = tables.map(data_raw, function(data_raw__current)
-		return  M.Replacement.new(data_raw__current)
-	end)
+	if data_raw.Enabled == nil then		-- check in separate thread bc we can't just compare "data_raw.Enabled or true" - we also expect false
+		data_raw.Enabled = true
+	end
+
+	local data = {
+		Enabled			= data_raw.Enabled,
+		Replacements	= tables.map(data_raw.Replacements or {}, function(data_raw__current)
+								return  M.Replacement.new(data_raw__current)
+							end),
+	}
 
 	return setmetatable(data, M.SavedSettings)
 end
@@ -66,12 +75,18 @@ M.Replacement.__index	= M.Replacement
 
 
 function M.Replacement.new(data_raw)
-	assert(strings.is_string(data_raw.UniqueFitID),	'Replacement.UniqueFitID is required string')	-- same case as in "dekcns.json"
-	assert(strings.is_string(data_raw.OutfitMesh),	'Replacement.OutfitMesh is required string')
+	assert(strings.is_string(data_raw.UniqueFitID),		'Replacement.UniqueFitID is required string')	-- same case as in "dekcns.json"
+	assert(strings.is_string(data_raw.OutfitMesh),		'Replacement.OutfitMesh is required string')	-- take from "dekcns.json" from "OutfitPaths" or "OutfitDatas.Mesh"
+	assert(numbers.is_boolean_or_nil(data_raw.Enabled),	'Replacement.Enabled should be boolean or nil')
+
+	if data_raw.Enabled == nil then		-- check in separate thread bc we can't just compare "data_raw.Enabled or true" - we also expect false
+		data_raw.Enabled = true
+	end
 
 	local data = {
 		UniqueFitID	= data_raw.UniqueFitID,
 		OutfitMesh	= data_raw.OutfitMesh,
+		Enabled		= data_raw.Enabled,
 	}
 
 	return setmetatable(data, M.Replacement)

@@ -1,3 +1,4 @@
 syntax: glob
 
 packages/**
+build/**

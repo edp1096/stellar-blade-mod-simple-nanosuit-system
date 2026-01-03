@@ -108,8 +108,8 @@ function M.ModInfo.new(data_raw)
 	local data = {
 		JsonFilePath	= data_raw.JsonFilePath,
 		ModOutfits		= tables.map(data_raw.ModOutfits,  function(mod_outfit__raw)
-							return M.ModOutfit.new(mod_outfit__raw)
-						end),
+								return M.ModOutfit.new(mod_outfit__raw)
+							end),
 	}
 
 	return setmetatable(data, M.ModInfo)
@@ -175,11 +175,11 @@ function M.ModOutfit.new(data_raw)
 		AnimationBP		= data_raw.AnimationBP or '',		-- TODO: validate according to existing object in UE / .ucas ?
 		PonyPhysics		= data_raw.PonyPhysics or '',		-- TODO: ensure it should be present here, bc it's also in "OutfitData"
 		OutfitDatas		= tables.map(data_raw.OutfitDatas or {}, function(data_raw_2, _index)
-							return M.OutfitData.new(data_raw_2)
-						end),
+								return M.OutfitData.new(data_raw_2)
+							end),
 		UserConfigs		= tables.map(data_raw.UserConfigs or {}, function(data_raw_2, _index)
-							return M.UserConfig.new(data_raw_2)
-						end),
+								return M.UserConfig.new(data_raw_2)
+							end),
 	}
 
 	return setmetatable(data, M.ModOutfit)
@@ -210,8 +210,8 @@ function M.OutfitData.new(data_raw)
 				]
 			]]
 		Parameters	= tables.map(data_raw.Parameters, function(data_raw_2, _index)
-						return M.OutfitDataParameter.new(data_raw_2)
-					end),
+							return M.OutfitDataParameter.new(data_raw_2)
+						end),
 		PonyPhysics	= data_raw.PonyPhysics,
 	}
 
@@ -490,6 +490,33 @@ end
 
 
 
+M.CharacterID = {
+	eve		= 'EVE',
+	adam	= 'ADAM',
+	lily	= 'LILY',
+	drone	= 'DRONE',
+}
+
+
+
+--[[
+All possible values for this field.
+Docs:
+	https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/guides/cns-json-setup.md
+]]
+M.FitMeshType = {
+	Body		= 'Body',
+    Face		= 'Face',
+    Hair		= 'Hair',
+    PonyTail	= 'PonyTail',	-- is listed in "MeshSubType", we just simplify it and merge here
+    Ears		= 'Ears',		-- usually earrings
+    Eyes		= 'Eyes',		-- usually glasses
+    Weapon		= 'Weapon',
+
+}
+
+
+
 --[[
 UE asset info.
 Props:
@@ -564,33 +591,6 @@ function M.UEAssetData.new(data_raw)
 
 	return setmetatable(data, M.UEAssetData)
 end
-
-
-
-M.CharacterID = {
-	eve		= 'EVE',
-	adam	= 'ADAM',
-	lily	= 'LILY',
-	drone	= 'DRONE',
-}
-
-
-
---[[
-All possible values for this field.
-Docs:
-	https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/guides/cns-json-setup.md
-]]
-M.FitMeshType = {
-	Body		= 'Body',
-    Face		= 'Face',
-    Hair		= 'Hair',
-    PonyTail	= 'PonyTail',	-- is listed in "MeshSubType", we just simplify it and merge here
-    Ears		= 'Ears',		-- usually earrings
-    Eyes		= 'Eyes',		-- usually glasses
-    Weapon		= 'Weapon',
-
-}
 
 
 
