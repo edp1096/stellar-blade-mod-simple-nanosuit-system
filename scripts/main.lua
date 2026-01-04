@@ -110,6 +110,7 @@ local function apply_mod_to_character(character_id)
 				outfit_mesh	= mod_outfit.OutfitPaths[1] or mesh_paths[1]
 			end
 
+			logger.debug('selected outfit_mesh', outfit_mesh)
 			assert(outfit_mesh, 'outfit mesh is missing in mod')
 
 			local asset_data	= assets.UEAssetData.from_path(outfit_mesh)

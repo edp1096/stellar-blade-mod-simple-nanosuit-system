@@ -4,7 +4,7 @@ About directories, files, etc.
 ]]
 
 local lfs	= require('lfs')
-local path	= require('path')	-- not just "path" to allow naming local variables so
+local path	= require('path')
 
 local paths_lib = StaticFindObject('/Script/Engine.Default__BlueprintPathsLibrary')	-- docs:  https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/Paths?highlight=paths&application_version=4.27#unreal.Paths
 
@@ -62,8 +62,8 @@ function M.mod_dir__get()
 		script_file = script_file:sub(2)
 	end
 
-	local scripts_dir	= path.dirname(path.dirname(script_file))
-	local mod_dir		= path.join(scripts_dir, '../')
+	local scripts_dir	= path.dirname(script_file)
+	local mod_dir		= path.dirname(scripts_dir)
 
 	return mod_dir
 end

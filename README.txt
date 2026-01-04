@@ -1,118 +1,51 @@
-Setup for Development
-	Install Stellar Blade through Steam
-	Install UE4SS mod
-		https://github.com/Chrisr0/RE-UE4SS/releases
-	Install Lua:
-		https://sourceforge.net/projects/luabinaries/files/5.4.2/Tools%20Executables/
-		https://www.lua.org/download.html
-	Install Luarocks:
-		https://luarocks.github.io/luarocks/releases/
-		https://luarocks.org/
-	Add both of them to System path:
-		or:
-			Win + R -> sysdm.cpl -> Enter
-			Settings -> About System -> Additional system settings
-		Go to Advanced tab
-		Click Environment Variables
-		Select "Path"
-		Click "Edit"
-	Install dependencies:
-		luarocks install lua-path	 0.3.1-2	 --tree=./packages
-		luarocks install dkjson		 2.8-2		 --tree=./packages
-			inserted space after tabs for Windows terminal to distinguish between args
-	For dev also:
-		Copy next header files to directory with Lua installation:
-			lua.h
-			luaconf.h
-			lualib.h
-			lua.hpp
-			lauxlib.h
-		Install MinGW GCC compiler:
-			https://www.mingw-w64.org/downloads/
-			https://github.com/niXman/mingw-builds-binaries/releases
-			MinGW-W64-builds
-			Pick "msvcrt" version,  like this:  "x86_64-15.2.0-release-win32-seh-msvcrt-rt_v13-rev0.7z"
-			Add ".\mingw64\bin" to PATH.
-		Install dependencies:
-			luarocks install luacheck	 1.2.0-1	 --tree=./packages
+Info:
+	"SNS - Simple Nanosuit System"  is a mod to load custom outfits in format,
+		compatible with  "CNS - Custom Nanosuit System"  (https://www.nexusmods.com/stellarblade/mods/1496).
+
+	Its goal is to be a simpler, slightly more stable alternative, allowing users to fix issues by themselves.
+		Both mods allow replacing  Eve's:  body, face, ear and eyes accessories;  Adam's, Lily's:  body;  Drone's mesh.
+		CNS provides GUI, support for big amount of configs.
+			Is closed-source, written in Lua, BP/C++ using Unreal Engine.
+			You need to ask mod author in order to add features or fix issues.
+		SNS is configured via text file, supports basic replacements.
+			Is open-source, written only in Lua.
+			You can do any fixes or implement any features you want.
+			But not all "CNS"-compatible mods work well with "SNS",  you should check this by yourself.
+
+	Code is open-source, available on Sourcehut:  https://hg.sr.ht/~vlad0337187/stellar-blade-mod-simple-nanosuit-system
+		PRs and any other help are appreciated.
+
+	Please consider the  "CC BY-NC-SA"  license when building upon it.
+		This license lets others remix, tweak, and build upon your work non-commercially, as long as they credit you and license their new creations under identical terms.
+		License text:  https://creativecommons.org/licenses/by-nc-sa/4.0/
+		Author:  vlad0337187
+
+	"SNS - Simple Nanosuit System"  is built to be compatible with  "CNS - Custom Nanosuit System"  mods format.
+		Those mods usually have  ".dekcns.json"  files besides  ".utoc", ".ucas", ".pak".
+		CNS was created by  "Dekita",  so  ".dekcns.json"  format.
+		You can download CNS here:  https://www.nexusmods.com/stellarblade/mods/1496
+		CNS Docs:  https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/README.md
+		They also have a discord server:  https://discord.gg/WyTdramBkm ,  I'm available there from time to time.
 
 
-Check code for errors:
-	./packages/bin/luacheck.bat  --config=./.luacheckrc  --codes  ./scripts  ../shared/Types.lua
+Installation:
+	- install UE4SS
+		- so there'll be "<StellarBladeInstallDir>\SB\Binaries\Win64\ue4ss\Mods\" directory present
+		- example:  "E:\Games\SteamLibrary\steamapps\common\StellarBlade\SB\Binaries\Win64\ue4ss\Mods\"
+	- download "SNS.zip"
+	- unpack "SNS.zip" into UE4SS mods directory
+		- so there'll be "<StellarBladeInstallDir>\SB\Binaries\Win64\ue4ss\Mods\SNS\" directory present
+		- it'll contain "enabled.txt", "sns.settings.json", etc.
 
 
-TODO:  Packing for Production
-
-	This describes how to prepare a clean, distributable version of the mod
-	(without development-only tools and dependencies).
-
-	1) Prepare clean output directory
-		Create a new empty directory, for example:
-			./dist/SNS/
-
-		Copy mod files into it:
-			- scripts/
-			- README.txt (optional)
-			- any other runtime-required files
-
-		Do NOT copy:
-			- .vscode/
-			- .idea/
-			- .git / .hg
-			- .luacheckrc
-			- dev scripts or notes
-
-
-	2) Create packages directory
-		Inside the new mod directory create:
-			./packages/
-
-		This directory will contain only runtime Lua dependencies.
-
-
-	3) Install production dependencies
-		Install only packages required at runtime
-		(using the same Lua version as the game / UE4SS).
-
-		Run from inside the new mod directory:
-
-			luarocks install lua-path  0.3.1-2  --tree=./packages
-			luarocks install dkjson    2.8-2    --tree=./packages
-
-		Do NOT install:
-			- luacheck
-			- luafilesystem (unless explicitly used at runtime)
-			- any build / lint / dev-only tools
-
-
-	4) Verify package layout
-		After installation, the directory structure should look like:
-
-			SNS/
-				scripts/
-				packages/
-					bin/
-					lib/
-					share/
-				README.txt (optional)
-
-		The mod must NOT rely on:
-			- global LuaRocks installation
-			- system-wide Lua packages
-
-
-	5) Final check (optional but recommended)
-		- Launch the game with the mod installed
-		- Verify:
-			- no missing module errors
-			- no references to dev-only tools
-			- mod works without Lua / LuaRocks in system PATH
-
-
-	6) Distribution
-		The resulting directory can now be:
-			- zipped
-			- copied directly into:
-				UE4SS/Mods/
-
-		This directory is self-contained and production-ready.
+Usage:
+	- download and place "CNS"-compatible mod into  "<StellarBladeInstallDir>\SB\Content\Paks\~mods\":
+		- example:  "E:\Games\SteamLibrary\steamapps\common\StellarBlade\SB\Content\Paks\~mods\"
+		- you can create nested folders to structure mods well
+	- open ".dekcns.json" file of that mod, copy "UniqueFitID" with it's value
+		- example:  "UniqueFitID": "Ines The First Descendant"
+	- paste it into "<StellarBladeInstallDir>\SB\Binaries\Win64\ue4ss\Mods\SNS\sns.settings.json"
+		- into object in "Replacements" array
+		- check "<StellarBladeInstallDir>\SB\Binaries\Win64\ue4ss\Mods\SNS\sns.settings.example.json" for more info
+	- load game, see outfit applied
+	- you can also edit "<StellarBladeInstallDir>\SB\Binaries\Win64\ue4ss\Mods\SNS\sns.settings.json" any time, then press "F9" to reload
