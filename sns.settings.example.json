@@ -2,50 +2,35 @@
 	"Enabled": true,
 	"Replacements": [
 		{
-			"UniqueFitID": "k7_YoRHafy_SkyAceNSFW",
-			"OutfitMesh": "/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW.0_SkyAceNSFW"
+			"UniqueFitID": "k7_YoRHafy_SkyAceNSFW"
 		},
 		{
-			"UniqueFitID": "AiK_MAsiaFace_15681",
-			"OutfitMesh": "/Game/OutfitMods/AiK_Naik_Makeup/Face/AiK_Face_MA1.AiK_Face_MA1"
+			"UniqueFitID": "AiK_MAsiaFace_15681"
 		},
 		{
-			"UniqueFitID": "AiK_NaiK_MaskAbstractSE_10004",
-			"OutfitMesh": "/Game/OutfitMods/AiK_ACC/Mask/Mask_Abstract.Mask_Abstract"
+			"UniqueFitID": "AdamCostume_Christmas_01",
+			"Enabled": false
 		},
 		{
-			"UniqueFitID": "AdamCostume_004",
-			"OutfitMesh": "/Game/Art/Character/NPC/CH_NPC_Adam_03/CH_NPC_Adam_03.CH_NPC_Adam_03"
+			"UniqueFitID": "LilyCostume_003",
+			"Enabled": false
+		},
+		{
+			"UniqueFitID": "DroneSeal_Christmas_01",
+			"Enabled": false
 		}
 	],
 	"SavedForLater": {
 		"Description": "We don't validate anything specified in this object, left for easy copy n paste",
-		"Eve_SkyAce_Suit_n_Face": [
+		"Eve_All_Possible": [
 			{
-				"UniqueFitID": "k7_YoRHafy_SkyAceNSFW",
-				"OutfitMesh": "/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW.0_SkyAceNSFW"
+				"UniqueFitID": "Repacked Fishnet Bodysuit"
 			},
 			{
-				"UniqueFitID": "AiK_NaiK_MaskAbstractSE_10004",
-				"OutfitMesh": "/Game/OutfitMods/AiK_ACC/Mask/Mask_Abstract.Mask_Abstract"
+				"UniqueFitID": "k7_YoRHafy_SkyAceNSFW"
 			},
 			{
-				"UniqueFitID": "AiK_MAsiaFace_15681",
-				"OutfitMesh": "/Game/OutfitMods/AiK_Naik_Makeup/Face/AiK_Face_MA1.AiK_Face_MA1"
-			}
-		],
-		"Eve_All": [
-			{
-				"UniqueFitID": "Repacked Fishnet Bodysuit",
-				"OutfitMesh": "/Game/CNSRepacked/6138f22cbccb9844/Art/Character/PC/CH_P_EVE_InnerSuit/CH_P_EVE_InnerSuit.CH_P_EVE_InnerSuit"
-			},
-			{
-				"UniqueFitID": "k7_YoRHafy_SkyAceNSFW",
-				"OutfitMesh": "/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW.0_SkyAceNSFW"
-			},
-			{
-				"UniqueFitID": "AiK_MAsiaFace_15681",
-				"OutfitMesh": "/Game/OutfitMods/AiK_Naik_Makeup/Face/AiK_Face_MA1.AiK_Face_MA1"
+				"UniqueFitID": "AiK_MAsiaFace_15681"
 			},
 			{
 				"UniqueFitID": "AiK_SplitHairDB_V3_CNS_6851",
@@ -56,8 +41,7 @@
 				"OutfitMesh": "/Game/OutfitMods/AiK_ACC/Horn/Horn_D1.Horn_D1"
 			},
 			{
-				"UniqueFitID": "FaceAccessory_001",
-				"OutfitMesh": "/Game/Art/Character/PC/00_ACC/ACC_GLA_01/ACC_GLA_01M.ACC_GLA_01M"
+				"UniqueFitID": "FaceAccessory_001"
 			}
 		]
 	}

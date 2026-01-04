@@ -75,9 +75,9 @@ M.Replacement.__index	= M.Replacement
 
 
 function M.Replacement.new(data_raw)
-	assert(strings.is_string(data_raw.UniqueFitID),		'Replacement.UniqueFitID is required string')	-- same case as in "dekcns.json"
-	assert(strings.is_string(data_raw.OutfitMesh),		'Replacement.OutfitMesh is required string')	-- take from "dekcns.json" from "OutfitPaths" or "OutfitDatas.Mesh"
-	assert(numbers.is_boolean_or_nil(data_raw.Enabled),	'Replacement.Enabled should be boolean or nil')
+	assert(strings.is_string(data_raw.UniqueFitID),			'Replacement.UniqueFitID is required string')			-- same case as in "dekcns.json"
+	assert(strings.is_string_or_nil(data_raw.OutfitMesh),	'Replacement.OutfitMesh should be string or omited')	-- take from "dekcns.json" from "OutfitPaths" or "OutfitDatas.Mesh"
+	assert(numbers.is_boolean_or_nil(data_raw.Enabled),		'Replacement.Enabled should be boolean or nil')
 
 	if data_raw.Enabled == nil then		-- check in separate thread bc we can't just compare "data_raw.Enabled or true" - we also expect false
 		data_raw.Enabled = true

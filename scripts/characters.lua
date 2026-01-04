@@ -187,7 +187,7 @@ function M.replace_mesh(
 		end
 		logger.debug('character_id', character_id)
 		logger.debug('mesh_type', mesh_type)
-		-- logger.inspect('mesh_component', mesh_component)
+		logger.inspect('mesh_component', mesh_component)
 
 		-- skip validation on init
 		local some_obj_invalid	= not mesh_component:IsValid() or not new_mesh_asset:IsValid()

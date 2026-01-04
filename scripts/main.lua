@@ -77,32 +77,42 @@ local function apply_mod_to_character(character_id)
 			end
 			::end_find__mod_outfit::
 
-			local is__mod_outfit__missing				= mod_outfit == nil
-			local is__mod_outfit__for_other_character	= mod_outfit.CharacterID ~= character_id
-			if is__mod_outfit__missing then
+			local is_mod_outfit_missing				= mod_outfit == nil
+			local is_mod_outfit_for_other_character	= mod_outfit.CharacterID ~= character_id
+			if is_mod_outfit_missing then
 				logger.error('mod fit is missing in game but present in saved file', replacement.UniqueFitID)
 				goto next_replacement
 			end
-			if is__mod_outfit__for_other_character then
+			if is_mod_outfit_for_other_character then
 				logger.info('replacement is for other character, skipping')
 				logger.debug('mod_outfit.CharacterID', mod_outfit.CharacterID, 'character_id', character_id)
 				goto next_replacement
 			end
 
-			local meshes_current = tables.map(mod_outfit.OutfitDatas, function(outfit_data)
+			local mesh_paths = tables.map(mod_outfit.OutfitDatas, function(outfit_data)
 				return outfit_data.Mesh
 			end)
+			logger.inspect('mesh_paths', mesh_paths)
+			logger.inspect('mod_outfit.OutfitPaths',  mod_outfit.OutfitPaths)
 
-			local is_missing__outfit_data = (
-				not		tables.has_value(mod_outfit.OutfitPaths,	replacement.OutfitMesh)
-				and not	tables.has_value(meshes_current,			replacement.OutfitMesh)
-				)
-			if is_missing__outfit_data then
-				logger.error('mesh', replacement.OutfitMesh, 'is missing in mod', replacement.UniqueFitID)
-				goto next_replacement
+			local outfit_mesh
+			if replacement.OutfitMesh then
+				local is_outfit_data_missing = (
+					not		tables.has_value(mod_outfit.OutfitPaths,	replacement.OutfitMesh)
+					and not	tables.has_value(mesh_paths,				replacement.OutfitMesh)
+					)
+				if is_outfit_data_missing then
+					logger.error('mesh', replacement.OutfitMesh, 'is missing in mod', replacement.UniqueFitID)
+					goto next_replacement
+				end
+				outfit_mesh	= replacement.OutfitMesh
+			else	-- take from first "OutfitPaths" oor first "OutfitDatas.Mesh"
+				outfit_mesh	= mod_outfit.OutfitPaths[1] or mesh_paths[1]
 			end
 
-			local asset_data	= assets.UEAssetData.from_path(replacement.OutfitMesh)
+			assert(outfit_mesh, 'outfit mesh is missing in mod')
+
+			local asset_data	= assets.UEAssetData.from_path(outfit_mesh)
 			local asset			= asset_data:load()
 
 			logger.info('will apply mod to character', character_id)
