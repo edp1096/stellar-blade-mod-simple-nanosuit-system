@@ -41,6 +41,12 @@ local function apply_mod_to_character(character_id)
 		return
 	end
 
+	-- if character_id == 'ADAM' then
+	-- 	logger.debug('is adam, returning')
+	-- 	return
+	-- 	-- goto next_replacement
+	-- end
+
 	logger.info('processing replacement for character', character_id)
 	local characters_parsed		= characters.find()
 	local character_instances	= characters_parsed[character_id]
@@ -134,11 +140,14 @@ end
 local function _func__log_traceback(func)
 	return function(...)
 		local func_args = table.pack(...)
-		xpcall(function()
-			func(table.unpack(func_args))
-		end, function(err)
-			print(debug.traceback(err, 2))
-		end)
+		xpcall(
+			function()
+				func(table.unpack(func_args))
+			end,
+			function(err)
+				print(debug.traceback(err, 2))
+			end
+		)
 	end
 end
 
@@ -157,8 +166,29 @@ local function _replace_mesh(character_id)
 		apply_mod_to_character(character_id)
 	end)
 end
+local function _replace_mesh__eve()
+	_replace_mesh(assets.CharacterID.eve)
+end
+local function _replace_mesh__adam()
+	_replace_mesh(assets.CharacterID.adam)
+end
+local function _replace_mesh__lily()
+	_replace_mesh(assets.CharacterID.lily)
+end
+local function _replace_mesh__drone()
+	_replace_mesh(assets.CharacterID.drone)
+end
 
-local _replace_mesh__debounced = _func__log_traceback(ue.debounce(_replace_mesh, 500))
+--[[
+We need separate debounce per character,
+	otherwise they would interrupt each other.
+Also functions must be defined before launched in hook,
+	otherwise they won't be debounced.
+]]
+local _replace_mesh__eve__debounced		= _func__log_traceback(ue.debounce(_replace_mesh__eve, 1000))
+local _replace_mesh__adam__debounced	= _func__log_traceback(ue.debounce(_replace_mesh__adam, 2000))	-- lil bit more to wait he's settled,  bc he doesn't have "NotifyBP_SetMesh" or "ApplyMeshInfo"
+local _replace_mesh__lily__debounced	= _func__log_traceback(ue.debounce(_replace_mesh__lily, 2000))	-- lil bit more to wait he's settled,  bc she doesn't have "NotifyBP_SetMesh" or "ApplyMeshInfo"
+local _replace_mesh__drone__debounced	= _func__log_traceback(ue.debounce(_replace_mesh__drone, 1000))
 
 
 
@@ -167,13 +197,18 @@ ExecuteInGameThread(function()
 	These objects don't exist on game start, Eve's obj is loaded soon before, Adam's - only when you load game.
 	So manually load them
 	]]
-	local uasset_data__eve	= assets.UEAssetData.from_path('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C')
-	local uasset_data__adam	= assets.UEAssetData.from_path('/Game/Art/Character/NPC/CH_NPC_Adam_01/Blueprints/CH_NPC_Adam_01_Blueprint.CH_NPC_Adam_01_Blueprint_C')
+	local uasset_data__eve		= assets.UEAssetData.from_path('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C')
+	local uasset_data__adam		= assets.UEAssetData.from_path('/Game/Art/Character/NPC/CH_NPC_Adam_01/Blueprints/CH_NPC_Adam_01_Blueprint.CH_NPC_Adam_01_Blueprint_C')
+	local uasset_data__lily		= assets.UEAssetData.from_path('/Game/Art/Character/NPC/CH_NPC_01/Blueprints/CH_NPC_01_Blueprint.CH_NPC_01_Blueprint_C')
+	local uasset_data__drone	= assets.UEAssetData.from_path('/Game/Art/Character/NPC/CH_NPC_Drone/BluePrints/CH_Drone_BP.CH_Drone_BP_C')
 	uasset_data__eve:load()
 	uasset_data__adam:load()
+	uasset_data__lily:load()
+	uasset_data__drone:load()
 
-	-- Hooks for Eve:
-
+	--[[
+	Hooks for Eve.
+	]]
 	ue.register_blueprint_hook('/Game/Art/Character/PC/CH_P_EVE_01/Blueprints/CH_P_EVE_01_Blueprint.CH_P_EVE_01_Blueprint_C:NotifyBP_SetMesh', function()
 		--[[
 		Cannot parse args well - they're "RemoteUnrealParam".
@@ -182,17 +217,37 @@ ExecuteInGameThread(function()
 		Didn't hook with "NotifyOnNewObject('/Script/SB.SBCharacter')"
 			bc meshes are replaced after some time after new char created.
 		]]
-		_replace_mesh__debounced(assets.CharacterID.eve)
+		-- logger.debug('EVEs NotifyBP_SetMesh  !!!!!!!!!')
+		_replace_mesh__eve__debounced()
 	end)
 
-	-- Hooks for Adam:
-
 	--[[
+	Hooks for Adam.
+
 	Adam doesn't have have n recieve "NotifyBP_SetMesh",  but seems it works and with "ReceiveBeginPlay"
 		while Eve receives "NotifyBP_SetMesh" multiple times after "ReceiveBeginPlay",  replacing on "ReceiveBeginPlay" on her will be rewritten.
 	]]
 	ue.register_blueprint_hook('/Game/Art/Character/NPC/CH_NPC_Adam_01/Blueprints/CH_NPC_Adam_01_Blueprint.CH_NPC_Adam_01_Blueprint_C:ReceiveBeginPlay', function()
-		_replace_mesh__debounced(assets.CharacterID.adam)
+		-- logger.debug('ADAMs ReceiveBeginPlay  <<<<<<<<<')
+		_replace_mesh__adam__debounced()
+	end)
+
+	--[[
+	Hooks for Lily.
+	]]
+	ue.register_blueprint_hook('/Game/Art/Character/NPC/CH_NPC_01/Blueprints/CH_NPC_01_Blueprint.CH_NPC_01_Blueprint_C:ReceiveBeginPlay', function()
+		-- logger.debug('LILYs ReceiveBeginPlay  ..........')
+		_replace_mesh__lily__debounced()
+	end)
+
+	--[[
+	Hooks for Drone.
+
+	"ApplyMeshInfo" is launched after "ReceiveBeginPlay", should be our target.
+	]]
+	ue.register_blueprint_hook('/Game/Art/Character/NPC/CH_NPC_Drone/BluePrints/CH_Drone_BP.CH_Drone_BP_C:ApplyMeshInfo', function()
+		-- logger.debug('DRONEs ApplyMeshInfo  ???????')
+		_replace_mesh__drone__debounced()
 	end)
 end)
 

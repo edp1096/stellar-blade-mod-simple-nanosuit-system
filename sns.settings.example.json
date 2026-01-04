@@ -6,12 +6,12 @@
 			"OutfitMesh": "/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW.0_SkyAceNSFW"
 		},
 		{
-			"UniqueFitID": "AiK_NaiK_MaskAbstractSE_10004",
-			"OutfitMesh": "/Game/OutfitMods/AiK_ACC/Mask/Mask_Abstract.Mask_Abstract"
-		},
-		{
 			"UniqueFitID": "AiK_MAsiaFace_15681",
 			"OutfitMesh": "/Game/OutfitMods/AiK_Naik_Makeup/Face/AiK_Face_MA1.AiK_Face_MA1"
+		},
+		{
+			"UniqueFitID": "AiK_NaiK_MaskAbstractSE_10004",
+			"OutfitMesh": "/Game/OutfitMods/AiK_ACC/Mask/Mask_Abstract.Mask_Abstract"
 		},
 		{
 			"UniqueFitID": "AdamCostume_004",
@@ -19,6 +19,7 @@
 		}
 	],
 	"SavedForLater": {
+		"Description": "We don't validate anything specified in this object, left for easy copy n paste",
 		"Eve_SkyAce_Suit_n_Face": [
 			{
 				"UniqueFitID": "k7_YoRHafy_SkyAceNSFW",

@@ -59,8 +59,8 @@ function M.parse(character)
 	local character_path		= kismet_lib:GetPathName(character):ToString()
 	local character_object_name	= kismet_lib:GetObjectName(character):ToString()
 	local is_adam				= strings.starts_with(character_object_name,	'CH_NPC_Adam_01_Blueprint_C')	-- may have 2 instances of adam in game at once
-	local is_lily				= strings.starts_with(character_object_name,	'CH_NPC_01_Blueprint')
-	local is_drone				= strings.starts_with(character_object_name,	'CH_Drone_BP')
+	local is_lily				= strings.starts_with(character_object_name,	'CH_NPC_01_Blueprint_C')
+	local is_drone				= strings.starts_with(character_object_name,	'CH_Drone_BP_C')
 	local is_eve				= strings.starts_with(character_object_name,	'CH_P_EVE_01_Blueprint_C')
 	local is_eve_in_game		= strings.starts_with(character_path,			'/Game/Art')
 		-- eve in lobby like:  "/Game/Lobby/Lobby.LOBBY:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482505"
@@ -108,6 +108,8 @@ function M.mesh_component__get(
 
 	local is_eve	= character_id == assets.CharacterID.eve
 	local is_adam	= character_id == assets.CharacterID.adam
+	local is_lily	= character_id == assets.CharacterID.lily
+	local is_drone	= character_id == assets.CharacterID.drone
 	local mesh_component
 
 	if is_eve then
@@ -140,11 +142,21 @@ function M.mesh_component__get(
 			[assets.FitMeshType.Ears]	= character.Mesh_FaceMask,
 		}
 		mesh_component = mesh_components__table[mesh_type]
+	elseif is_lily then
+		local mesh_components__table = {
+			[assets.FitMeshType.Body]	= character.Mesh,	-- no other available
+		}
+		mesh_component = mesh_components__table[mesh_type]
+	elseif is_drone then
+		local mesh_components__table = {
+			[assets.FitMeshType.Body]	= character.Mesh,	-- no other available
+		}
+		mesh_component = mesh_components__table[mesh_type]
 	end
 
 	assert(mesh_component, 'unable to get mesh component for character '..character_id)
 
-	logger.inspect('got mesh_component', mesh_component)
+	-- logger.inspect('got mesh_component', mesh_component)
 	return mesh_component
  end
 
@@ -173,8 +185,9 @@ function M.replace_mesh(
 			retry_current = retries_max + 1	-- stop retrying
 			return
 		end
+		logger.debug('character_id', character_id)
 		logger.debug('mesh_type', mesh_type)
-		logger.inspect('mesh_component', mesh_component)
+		-- logger.inspect('mesh_component', mesh_component)
 
 		-- skip validation on init
 		local some_obj_invalid	= not mesh_component:IsValid() or not new_mesh_asset:IsValid()

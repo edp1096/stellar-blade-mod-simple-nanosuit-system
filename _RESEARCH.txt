@@ -280,7 +280,7 @@ need to find glasses controller on eve
 
 
 
-Adam's mesh
+Checking how to replace Adam's mesh
 	CH_NPC_Adam_01_Blueprint_C /Game/Art/Character/NPC/CH_NPC_Adam_01/Blueprints/CH_NPC_Adam_01_Blueprint.Default__CH_NPC_Adam_01_Blueprint_C
 		class
 			BlueprintGeneratedClass /Game/Art/Character/NPC/CH_NPC_Adam_01/Blueprints/CH_NPC_Adam_01_Blueprint.CH_NPC_Adam_01_Blueprint_C
@@ -306,3 +306,26 @@ Adam's mesh
 				for animations
 		SBSkeletalMeshComponent /Game/Art/Character/NPC/CH_NPC_Adam_01/Blueprints/CH_NPC_Adam_01_Blueprint_Seq.Default__CH_NPC_Adam_01_Blueprint_Seq_C:CharacterMesh0
 		SBSkeletalMeshComponent /Game/Art/Character/NPC/CH_NPC_Adam_01/Blueprints/CH_NPC_Adam_01_Blueprint_Seq.CH_NPC_Adam_01_Blueprint_Seq_C:Mesh_Face_GEN_VARIABLE
+
+
+
+Checking how to replace Lily's mesh
+	CH_NPC_01_Blueprint_C /Game/Art/Character/NPC/CH_NPC_01/Blueprints/CH_NPC_01_Blueprint.Default__CH_NPC_01_Blueprint_C
+		class
+			BlueprintGeneratedClass /Game/Art/Character/NPC/CH_NPC_01/Blueprints/CH_NPC_01_Blueprint.CH_NPC_01_Blueprint_C
+		superstruct
+			/Script/SB.SBCharacter
+		bHidden				False
+		Mesh				SBSkeletalMeshComponent'/Game/Art/Character/NPC/CH_NPC_01/Blueprints/CH_NPC_01_Blueprint.Default__CH_NPC_01_Blueprint_C:CharacterMesh0'
+		Mesh_Face			None
+
+
+
+Checking how to replace Drone's mesh
+	CH_Drone_BP_C /Game/Art/Character/NPC/CH_NPC_Drone/BluePrints/CH_Drone_BP.Default__CH_Drone_BP_C
+		class
+			BlueprintGeneratedClass /Game/Art/Character/NPC/CH_NPC_Drone/BluePrints/CH_Drone_BP.CH_Drone_BP_C
+		Mesh				SBSkeletalMeshComponent'/Game/Art/Character/NPC/CH_NPC_Drone/BluePrints/CH_Drone_BP.Default__CH_Drone_BP_C:CharacterMesh0'
+		bHidden				False
+		Function /Game/Art/Character/NPC/CH_NPC_Drone/BluePrints/CH_Drone_BP.CH_Drone_BP_C:ReceiveBeginPlay
+		Function /Game/Art/Character/NPC/CH_NPC_Drone/BluePrints/CH_Drone_BP.CH_Drone_BP_C:ApplyMeshInfo

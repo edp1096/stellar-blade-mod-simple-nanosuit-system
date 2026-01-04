@@ -622,7 +622,7 @@ function M.UEAssetData:load()
 	end
 
 	logger.info(('obtained asset: %s'):format(asset))
-	logger.inspect('asset', asset)
+	-- logger.inspect('asset', asset)
 	return asset
 end
 

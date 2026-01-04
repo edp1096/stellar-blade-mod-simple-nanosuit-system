@@ -137,6 +137,13 @@ end
 
 
 
+--[[
+Typical func for frontend development -
+	wait "wait_ms" then execute passed "function_".
+If this func was called another time(s) during "wait_ms" -
+	launch of first functions is skipped, "wait_ms" is reset,
+	only last called "function_" is launched.
+]]
 function M.debounce(function_, wait_ms)
 	if not wait_ms then
 		wait_ms = 500	-- half of second
