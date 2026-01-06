@@ -4,8 +4,7 @@ Helpers related to assets packages in "~mods" foler.
 
 local path = require('path')
 
-local AssetRegistryHelpers	= StaticFindObject('/Script/AssetRegistry.Default__AssetRegistryHelpers')
-local UEHelpers				= require('UEHelpers')
+local AssetRegistryHelpers	= StaticFindObject('/Script/AssetRegistry.Default__AssetRegistryHelpers')	-- docs:  https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/AssetRegistryHelpers?application_version=4.27
 
 local fs		= require('fs')
 local json		= require('dkjson')
@@ -13,6 +12,7 @@ local logger	= require('logger')
 local numbers	= require('numbers')
 local strings	= require('strings')
 local tables	= require('tables')
+local ue		= require('ue')
 
 
 
@@ -271,20 +271,20 @@ function M.UserConfig.new(data_raw)
 
 	local data = {
 		ShapeKeys		= tables.map(data_raw.ShapeKeys or {},			function(data_raw_2, _index)
-							return M.ShapeKey.new(data_raw_2)
-						end),
+								return M.ShapeKey.new(data_raw_2)
+							end),
 		MaterialToggles	= tables.map(data_raw.MaterialToggles or {},	function(data_raw_2, _index)
-							return M.MaterialToggle.new(data_raw_2)
-						end),
+								return M.MaterialToggle.new(data_raw_2)
+							end),
 		ScalarControls	= tables.map(data_raw.ScalarControls or {},		function(data_raw_2, _index)
-							return M.ScalarControl.new(data_raw_2)
-						end),
+								return M.ScalarControl.new(data_raw_2)
+							end),
 		VectorControls	= tables.map(data_raw.VectorControls or {},		function(data_raw_2, _index)
-							return M.VectorControl.new(data_raw_2)
-						end),
+								return M.VectorControl.new(data_raw_2)
+							end),
 		TextureOptions	= tables.map(data_raw.TextureOptions or {},		function(data_raw_2, _index)
-							return M.TextureOption.new(data_raw_2)
-						end),
+								return M.TextureOption.new(data_raw_2)
+							end),
 	}
 
 	return setmetatable(data, M.UserConfig)
@@ -581,11 +581,11 @@ function M.UEAssetData.new(data_raw)
 		PackageName		= data_raw.PackageName,	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW'
 		ObjectPath		= data_raw.ObjectPath,	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW.0_SkyAceNSFW'
 		ue_object		= {	-- Object, suitable passing to UE functions.  Used Fname for that.
-			AssetName		= UEHelpers.FindOrAddFName(data_raw.AssetName),		-- example:  '0_SkyAceNSFW'
-			AssetClass		= UEHelpers.FindOrAddFName(data_raw.AssetClass),	-- example:  'SkeletalMesh'
-			PackagePath		= UEHelpers.FindOrAddFName(data_raw.PackagePath),	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW'
-			PackageName		= UEHelpers.FindOrAddFName(data_raw.PackageName),	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW'
-			ObjectPath		= UEHelpers.FindOrAddFName(data_raw.ObjectPath),	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW.0_SkyAceNSFW'
+			AssetName		= ue.FindOrAddFName(data_raw.AssetName),		-- example:  '0_SkyAceNSFW'
+			AssetClass		= ue.FindOrAddFName(data_raw.AssetClass),	-- example:  'SkeletalMesh'
+			PackagePath		= ue.FindOrAddFName(data_raw.PackagePath),	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW'
+			PackageName		= ue.FindOrAddFName(data_raw.PackageName),	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW'
+			ObjectPath		= ue.FindOrAddFName(data_raw.ObjectPath),	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW.0_SkyAceNSFW'
 		},
 	}
 

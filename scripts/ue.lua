@@ -166,5 +166,18 @@ end
 
 
 
+--[[
+Fixes "UEHelpers.FindOrAddFName", bc it doesn't account "None_32", "None_35", etc. as "None".
+]]
+function M.FindOrAddFName(name)
+    local fname				= FName(name, EFindName.FNAME_Find)
+    local fname_not_found	= (fname:ToString() == 'None') or (fname:ToString():match('^None_'))
+    if fname_not_found then
+        fname = FName(name, EFindName.FNAME_Add)
+    end
+    return fname
+end
+
+
 
 return M

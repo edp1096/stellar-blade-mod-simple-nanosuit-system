@@ -30,6 +30,7 @@ Info:
 
 Installation:
 	- install UE4SS
+		- https://github.com/Chrisr0/RE-UE4SS/releases
 		- so there'll be "<StellarBladeInstallDir>\SB\Binaries\Win64\ue4ss\Mods\" directory present
 		- example:  "E:\Games\SteamLibrary\steamapps\common\StellarBlade\SB\Binaries\Win64\ue4ss\Mods\"
 	- download "SNS.zip"

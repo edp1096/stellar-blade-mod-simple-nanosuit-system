@@ -47,3 +47,4 @@ Packing for Production
 		(without development-only tools and dependencies).
 	Setup everything in development mode.
 	Launch "build.lua" or commands from it.
+	Get "./build/SNS.zip".

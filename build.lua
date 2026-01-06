@@ -8,13 +8,13 @@ local function run(cmd)
 	local cmd_in_powershell	= _run_in_powershell(cmd)
 	local ok, reason, code	= os.execute(cmd_in_powershell)
 	if not ok then
-		error('Command failed: ' .. cmd .. ' code: ' .. code)
+		error('Command failed: ' .. cmd .. ' code: ' .. code .. ' reason: ' .. reason)
 	end
 end
 
 
 
-run('rm -R ./build')
+run('if (Test-Path ./build) { Remove-Item -Recurse -Force ./build }')	-- "rm -R ./build"  fails if dir missing,  no options to fix it
 run('mkdir ./build/SNS')
 run('mkdir ./build/SNS/packages')
 run('cp -R ./scripts ./build/SNS/scripts')
