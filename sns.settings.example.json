@@ -5,9 +5,6 @@
 			"UniqueFitID": "k7_YoRHafy_SkyAceNSFW"
 		},
 		{
-			"UniqueFitID": "AiK_MAsiaFace_15681"
-		},
-		{
 			"UniqueFitID": "AdamCostume_Christmas_01",
 			"Enabled": false
 		},
@@ -18,24 +15,57 @@
 		{
 			"UniqueFitID": "DroneSeal_Christmas_01",
 			"Enabled": false
+		},
+		{
+			"UniqueFitID": "S2J_ObsidianThick",
+			"UserConfigs": {
+				"ShapeKeys": [
+					{
+						"ShapeKeyName": "Breasts",
+						"Value": 1.0
+					}
+				]
+			}
+		},
+		{
+			"UniqueFitID": "AiK_MAsiaFace_15681",
+			"UserConfigs": {
+				"MaterialToggles": [
+					{
+						"DisplayName": "Tatoo",
+						"MaterialIndex": 1,
+						"Value": true
+					}
+				],
+				"ScalarControls": [
+					{
+						"ParamName": "Iris UV Radius",
+						"MaterialIndex": 9,
+						"Value": 0.14
+					}
+				],
+				"VectorControls": [
+					{
+						"ParamName": "ScleraTint",
+						"MaterialIndex": 9,
+						"Value": [0.0, 0.5, 1.0, 1.0]
+					}
+				],
+				"TextureOptions": [
+					{
+						"DisplayName": "Eyes Left.  This field is ignored by SNS,  left for clarity.",
+						"Description": "Change EVE's Pupil Style.  This field is ignored by SNS,  left for clarity.",
+						"ParamName": "IrisColor",
+						"MaterialIndex": 9,
+						"Value": "/Game/OutfitMods/AiK_Eyes/Eyes_Cat/V2E.V2E"
+					}
+				]
+			}
 		}
 	],
 	"SavedForLater": {
 		"Description": "We don't validate anything specified in this object, left for easy copy n paste",
-		"Eve_All_Possible": [
-			{
-				"UniqueFitID": "Repacked Fishnet Bodysuit"
-			},
-			{
-				"UniqueFitID": "k7_YoRHafy_SkyAceNSFW"
-			},
-			{
-				"UniqueFitID": "AiK_MAsiaFace_15681"
-			},
-			{
-				"UniqueFitID": "AiK_SplitHairDB_V3_CNS_6851",
-				"OutfitMesh": "/Game/OutfitMods/AiK_Split_Hair/DB_V3/CH01_NM.CH01_NM"
-			},
+		"Eve_Nice_Accessories": [
 			{
 				"UniqueFitID": "AiK_NaiK_Horn_7525",
 				"OutfitMesh": "/Game/OutfitMods/AiK_ACC/Horn/Horn_D1.Horn_D1"

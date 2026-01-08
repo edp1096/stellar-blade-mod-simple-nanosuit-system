@@ -75,11 +75,11 @@ function M.inspect(ue_obj)
 		end
 
 		return {
-			PathName	= kismet_lib:GetPathName(ue_obj):ToString(),
-			ObjectName	= kismet_lib:GetObjectName(ue_obj):ToString(),
-			DisplayName	= kismet_lib:GetDisplayName(ue_obj):ToString(),	-- often same as "ObjectName"
-			Class		= tostring(ue_obj:GetClass()),
-			ClassName	= kismet_lib:GetObjectName(ue_obj:GetClass()):ToString(),
+			PathName	= M.inspect__get__PathName(ue_obj),
+			ObjectName	= M.inspect__get__ObjectName(ue_obj),
+			DisplayName	= M.inspect__get__DisplayName(ue_obj),
+			Class		= M.inspect__get__Class(ue_obj),
+			ClassName	= M.inspect__get__ClassName(ue_obj),
 		}
 	end)
 
@@ -87,6 +87,33 @@ function M.inspect(ue_obj)
 		return nil
 	end
 	return result
+end
+
+
+
+-- returns like  "/Game/Art/BG/WorldMap/Dungeon_P/Matrix_XI.Matrix_XI:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482121.Mesh_Face.MI_EyeRefractive1_Inst_2147478815"
+function M.inspect__get__PathName(ue_obj)
+	return kismet_lib:GetPathName(ue_obj):ToString()
+end
+
+-- returns like  "MI_EyeRefractive1_Inst_2147478815"
+function M.inspect__get__ObjectName(ue_obj)
+	return kismet_lib:GetObjectName(ue_obj):ToString()
+end
+
+-- returns like  "MI_EyeRefractive1_Inst_2147478815",  often same as "ObjectName"
+function M.inspect__get__DisplayName(ue_obj)
+	return kismet_lib:GetDisplayName(ue_obj):ToString()
+end
+
+-- returns like  "UClass: 00000002456C6758"
+function M.inspect__get__Class(ue_obj)
+	return tostring(ue_obj:GetClass())
+end
+
+-- returns like  "MaterialInstanceDynamic",  "SkeletalMeshComponent"
+function M.inspect__get__ClassName(ue_obj)
+	return kismet_lib:GetObjectName(ue_obj:GetClass()):ToString()
 end
 
 
@@ -132,7 +159,10 @@ function M.register_blueprint_hook(hook_path, function_callback, retries_max)
 		end
 	end
 
-	ExecuteWithDelay(RETRY_TIME, try_register_hook)
+	-- ExecuteWithDelay(RETRY_TIME, try_register_hook)
+	try_register_hook()
+		-- do it first time in sync bc in rare cases GC can delete loaded classes,
+		-- so functions we are hooking may not exist
 end
 
 

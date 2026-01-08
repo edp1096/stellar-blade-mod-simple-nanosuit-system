@@ -135,20 +135,21 @@ Docs:
 		https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/guides/cns-json-advanced.md
 ]]
 function M.ModOutfit.new(data_raw)
-	assert(strings.is_string(data_raw.UniqueFitID), 'UniqueFitID is required string')
-	assert(strings.is_string_or_nil(data_raw.CharacterID), 'ModOutfit.CharacterID should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.DisplayName), 'ModOutfit.DisplayName should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.Description), 'ModOutfit.Description should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.Requirement), 'ModOutfit.Requirement should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.FitMeshType), 'ModOutfit.FitMeshType should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.MeshSubType), 'ModOutfit.MeshSubType should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.OutfitImage), 'ModOutfit.OutfitImage should be string or omitted')
+	assert(strings.is_string(data_raw.UniqueFitID),			'UniqueFitID is required string')
+	assert(strings.is_string_or_nil(data_raw.CharacterID),	'ModOutfit.CharacterID should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.DisplayName),	'ModOutfit.DisplayName should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.Description),	'ModOutfit.Description should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.Requirement),	'ModOutfit.Requirement should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.FitMeshType),	'ModOutfit.FitMeshType should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.MeshSubType),	'ModOutfit.MeshSubType should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.OutfitImage),	'ModOutfit.OutfitImage should be string or omitted')
 	assert(tables.is_list_of_or_nil(data_raw.OutfitTypes, strings.is_string), 'ModOutfit.OutfitTypes should be list of strings or omitted')
 	assert(tables.is_list_of_or_nil(data_raw.OutfitPaths, strings.is_string), 'ModOutfit.OutfitPaths should be list of strings or omitted')
 	assert(tables.is_list_of_or_nil(data_raw.OutfitNames, strings.is_string), 'ModOutfit.OutfitNames should be list of strings or omitted')
-	assert(strings.is_string_or_nil(data_raw.AnimationBP), 'ModOutfit.AnimationBP should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.PonyPhysics), 'ModOutfit.PonyPhysics should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.AnimationBP),	'ModOutfit.AnimationBP should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.PonyPhysics),	'ModOutfit.PonyPhysics should be string or omitted')
 	assert(tables.is_list_of_or_nil(data_raw.OutfitDatas, tables.is_table), 'ModOutfit.OutfitDatas should be array of "OutfitData" or omitted')
+	assert(tables.is_table_or_nil(data_raw.UserConfigs),	'ModOutfit.UserConfigs should be "UserConfigs" or omitted')
 
 	if not data_raw.FitMeshType then
 		data_raw.FitMeshType = M.FitMeshType.Body
@@ -174,12 +175,10 @@ function M.ModOutfit.new(data_raw)
 		OutfitNames		= data_raw.OutfitNames or {},		-- example: ["Vanilla", "Cuffless"]
 		AnimationBP		= data_raw.AnimationBP or '',		-- TODO: validate according to existing object in UE / .ucas ?
 		PonyPhysics		= data_raw.PonyPhysics or '',		-- TODO: ensure it should be present here, bc it's also in "OutfitData"
-		OutfitDatas		= tables.map(data_raw.OutfitDatas or {}, function(data_raw_2, _index)
+		OutfitDatas		= tables.map(data_raw.OutfitDatas or {}, function(data_raw_2)
 								return M.OutfitData.new(data_raw_2)
 							end),
-		UserConfigs		= tables.map(data_raw.UserConfigs or {}, function(data_raw_2, _index)
-								return M.UserConfig.new(data_raw_2)
-							end),
+		UserConfigs		= data_raw.UserConfigs and M.UserConfigs.new(data_raw.UserConfigs),
 	}
 
 	return setmetatable(data, M.ModOutfit)
@@ -209,7 +208,7 @@ function M.OutfitData.new(data_raw)
 				"/Game/OutfitMods/k7_SkinSuit/Materials/k7_SkinSuit_Inner_Skin02.k7_SkinSuit_Inner_Skin02"
 				]
 			]]
-		Parameters	= tables.map(data_raw.Parameters, function(data_raw_2, _index)
+		Parameters	= tables.map(data_raw.Parameters, function(data_raw_2)
 							return M.OutfitDataParameter.new(data_raw_2)
 						end),
 		PonyPhysics	= data_raw.PonyPhysics,
@@ -257,77 +256,37 @@ M.OUTFIT_DATA_PARAM_TYPES = {'Texture', 'Scalar', 'Vector'}
 --[[
 Class containing user config for suit.
 ]]
-M.UserConfig			= {}
-M.UserConfig.__index	= M.UserConfig
+M.UserConfigs			= {}
+M.UserConfigs.__index	= M.UserConfigs
 
 
 
-function M.UserConfig.new(data_raw)
-	assert(tables.is_list_of_or_nil(data_raw.ShapeKeys,			tables.is_table), 'UserConfig.ShapeKeys should be list of "ShapeKey" or omitted')
-	assert(tables.is_list_of_or_nil(data_raw.MaterialToggles,	tables.is_table), 'UserConfig.MaterialToggles should be list of "MaterialToggle" or omitted')
-	assert(tables.is_list_of_or_nil(data_raw.ScalarControls,	tables.is_table), 'UserConfig.ScalarControls should be list of "ScalarControl" or omitted')
-	assert(tables.is_list_of_or_nil(data_raw.VectorControls,	tables.is_table), 'UserConfig.VectorControls should be list of "VectorControl" or omitted')
-	assert(tables.is_list_of_or_nil(data_raw.TextureOptions,	tables.is_table), 'UserConfig.TextureOptions should be list of "TextureOption" or omitted')
+function M.UserConfigs.new(data_raw)
+	assert(tables.is_list_of_or_nil(data_raw.ShapeKeys,			tables.is_table), 'UserConfigs.ShapeKeys should be list of "ShapeKey" or omitted')
+	assert(tables.is_list_of_or_nil(data_raw.MaterialToggles,	tables.is_table), 'UserConfigs.MaterialToggles should be list of "MaterialToggle" or omitted')
+	assert(tables.is_list_of_or_nil(data_raw.ScalarControls,	tables.is_table), 'UserConfigs.ScalarControls should be list of "ScalarControl" or omitted')
+	assert(tables.is_list_of_or_nil(data_raw.VectorControls,	tables.is_table), 'UserConfigs.VectorControls should be list of "VectorControl" or omitted')
+	assert(tables.is_list_of_or_nil(data_raw.TextureOptions,	tables.is_table), 'UserConfigs.TextureOptions should be list of "TextureOption" or omitted')
 
 	local data = {
-		ShapeKeys		= tables.map(data_raw.ShapeKeys or {},			function(data_raw_2, _index)
-								return M.ShapeKey.new(data_raw_2)
-							end),
-		MaterialToggles	= tables.map(data_raw.MaterialToggles or {},	function(data_raw_2, _index)
+		MaterialToggles	= tables.map(data_raw.MaterialToggles or {},	function(data_raw_2)
 								return M.MaterialToggle.new(data_raw_2)
 							end),
-		ScalarControls	= tables.map(data_raw.ScalarControls or {},		function(data_raw_2, _index)
+		ScalarControls	= tables.map(data_raw.ScalarControls or {},		function(data_raw_2)
 								return M.ScalarControl.new(data_raw_2)
 							end),
-		VectorControls	= tables.map(data_raw.VectorControls or {},		function(data_raw_2, _index)
+		VectorControls	= tables.map(data_raw.VectorControls or {},		function(data_raw_2)
 								return M.VectorControl.new(data_raw_2)
 							end),
-		TextureOptions	= tables.map(data_raw.TextureOptions or {},		function(data_raw_2, _index)
+		TextureOptions	= tables.map(data_raw.TextureOptions or {},		function(data_raw_2)
 								return M.TextureOption.new(data_raw_2)
+							end),
+		ShapeKeys		= tables.map(data_raw.ShapeKeys or {},			function(data_raw_2)
+								return M.ShapeKey.new(data_raw_2)
 							end),
 	}
 
-	return setmetatable(data, M.UserConfig)
-end
-
-
-
---[[
-Class containing shape key for some mesh.
-Originally was displayed in GUI in CNS, but we'll set it manually, so only few fields are required for SNS.
-]]
-M.ShapeKey			= {}
-M.ShapeKey.__index	= M.ShapeKey
-
-
-
-function M.ShapeKey.new(data_raw)
-	assert(strings.is_string_or_nil(data_raw.DisplayName),	'ShapeKey.DisplayName should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.Description),	'ShapeKey.Description should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.ShapeKeyName),	'ShapeKey.ShapeKeyName should be string or omitted')
-	assert(strings.is_string(data_raw.ShapeKeyName),		'ShapeKey.ShapeKeyName is required string')
-	assert(numbers.is_number(data_raw.Value),				'ShapeKey.Value is required number')
-	assert(numbers.is_number_or_nil(data_raw.Min),			'ShapeKey.Min should be number or omitted')
-	assert(numbers.is_number_or_nil(data_raw.Max),			'ShapeKey.Max should be number or omitted')
-	assert(numbers.is_number_or_nil(data_raw.Step),			'ShapeKey.Step should be number or omitted')
-
-	local data = {
-		DisplayName		= data_raw.DisplayName,		-- example: "Boobs"
-		Description		= data_raw.Description,		-- example: "Change the size of Eve's breasts 😳."
-		ShapeKeyName	= data_raw.ShapeKeyName,	-- example: "Breasts"
-		Value			= data_raw.Value,			-- example: 0.5
-		Min				= data_raw.Min,				-- example: 0.0
-			-- we don't display them, so allow omiting
-			-- TODO later:  validate "Value" according to them
-		Max				= data_raw.Max,				-- example: 1.0
-			-- we don't display them, so allow omiting
-			-- TODO later:  validate "Value" according to them
-		Step			= data_raw.Step,			-- example: 0.1
-			-- we don't display them, so allow omiting
-			-- TODO later:  validate "Value" according to them
-	}
-
-	return setmetatable(data, M.ShapeKey)
+	return setmetatable(data, M.UserConfigs)
 end
 
 
@@ -377,7 +336,7 @@ function M.ScalarControl.new(data_raw)
 	assert(strings.is_string_or_nil(data_raw.Association),	'ScalarControl.Association should be string or omitted')
 	assert(numbers.is_number(data_raw.LayerIndex),			'ScalarControl.LayerIndex is required number')
 	assert(numbers.is_number(data_raw.MaterialIndex),		'ScalarControl.MaterialIndex is required number')
-	assert(numbers.is_boolean(data_raw.Value),				'ScalarControl.Value is required boolean')
+	assert(numbers.is_number(data_raw.Value),				'ScalarControl.Value is required number')
 
 	local data = {
 		DisplayName		= data_raw.DisplayName,		-- example: "Iris Hue Shift Eyes L"
@@ -404,17 +363,17 @@ M.VectorControl.__index	= M.VectorControl
 
 
 function M.VectorControl.new(data_raw)
-	assert(strings.is_string_or_nil(data_raw.DisplayName),		'VectorControl.DisplayName should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.Description),		'VectorControl.Description should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.ParamName),		'VectorControl.ParamName should be string or omitted')
-	assert(strings.is_string_or_nil(data_raw.Association),		'VectorControl.Association should be string or omitted')
-	assert(numbers.is_number(data_raw.LayerIndex),				'VectorControl.LayerIndex is required number')
-	assert(numbers.is_number(data_raw.MaterialIndex),			'VectorControl.MaterialIndex is required number')
-	assert(tables.is_list_of_numbers(data_raw.Value),			'VectorControl.Value is required array of numbers')
-	assert(tables.is_list_of_booleans_or_nil(data_raw.Sliders),	'VectorControl.Sliders should be array of boolean or omitted')
-	assert(tables.is_list_of_numbers_or_nil(data_raw.Min),		'VectorControl.Min should be array of number or omitted')
-	assert(tables.is_list_of_numbers_or_nil(data_raw.Max),		'VectorControl.Max should be array of number or omitted')
-	assert(tables.is_list_of_numbers_or_nil(data_raw.Step),		'VectorControl.Step should be array of number or omitted')
+	assert(strings.is_string_or_nil(data_raw.DisplayName),			'VectorControl.DisplayName should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.Description),			'VectorControl.Description should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.ParamName),			'VectorControl.ParamName should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.Association),			'VectorControl.Association should be string or omitted')
+	assert(numbers.is_number(data_raw.LayerIndex),					'VectorControl.LayerIndex is required number')
+	assert(numbers.is_number(data_raw.MaterialIndex),				'VectorControl.MaterialIndex is required number')
+	assert(tables.is_list_of(data_raw.Value, numbers.is_number),			'VectorControl.Value is required array of numbers')
+	assert(tables.is_list_of_or_nil(data_raw.Sliders, numbers.is_boolean),	'VectorControl.Sliders should be array of boolean or omitted')
+	assert(tables.is_list_of_or_nil(data_raw.Min,	numbers.is_number),		'VectorControl.Min should be array of number or omitted')
+	assert(tables.is_list_of_or_nil(data_raw.Max,	numbers.is_number),		'VectorControl.Max should be array of number or omitted')
+	assert(tables.is_list_of_or_nil(data_raw.Step,	numbers.is_number),		'VectorControl.Step should be array of number or omitted')
 
 	local data = {
 		DisplayName		= data_raw.DisplayName,		-- example: "Sclera Tint Eyes R"
@@ -473,9 +432,10 @@ function M.TextureOption.new(data_raw)
 		Association		= data_raw.Association,		-- TODO: validate with enum ?  Known values: ["Global"]
 		LayerIndex		= data_raw.LayerIndex,		-- example: -1
 		MaterialIndex	= data_raw.MaterialIndex,	-- example: 9
-		Value			= data_raw.Value,
+		Value			= data_raw.Value + 1,
 			-- example: 0
 			-- index of texture to apply,  starts from 0
+			-- increase to 1 bc tables in Lua are 1-indexed
 		OptionNames		= data_raw.OptionNames,
 			-- example: ["Cross",  "Fck"]
 			-- we don't display them
@@ -486,6 +446,49 @@ function M.TextureOption.new(data_raw)
 	}
 
 	return setmetatable(data, M.TextureOption)
+end
+
+
+
+--[[
+Class containing shape key for some mesh.
+Originally was displayed in GUI in CNS, but we'll set it manually, so only few fields are required for SNS.
+]]
+M.ShapeKey			= {}
+M.ShapeKey.__index	= M.ShapeKey
+
+
+
+function M.ShapeKey.new(data_raw)
+	if not data_raw.ShapeKeyName and data_raw.DisplayName then	-- special case, it's how it was implemented in CNS,  also in  "Minerhva - SBikini-2531-v1-0"
+		data_raw.ShapeKeyName = data_raw.DisplayName
+	end
+
+	assert(strings.is_string_or_nil(data_raw.DisplayName),	'ShapeKey.DisplayName should be string or omitted')
+	assert(strings.is_string_or_nil(data_raw.Description),	'ShapeKey.Description should be string or omitted')
+	assert(strings.is_string(data_raw.ShapeKeyName),		'ShapeKey.ShapeKeyName is required string')
+	assert(numbers.is_number(data_raw.Value),				'ShapeKey.Value is required number')
+	assert(numbers.is_number_or_nil(data_raw.Min),			'ShapeKey.Min should be number or omitted')
+	assert(numbers.is_number_or_nil(data_raw.Max),			'ShapeKey.Max should be number or omitted')
+	assert(numbers.is_number_or_nil(data_raw.Step),			'ShapeKey.Step should be number or omitted')
+
+	local data = {
+		DisplayName		= data_raw.DisplayName,		-- example: "Boobs"
+		Description		= data_raw.Description,		-- example: "Change the size of Eve's breasts 😳."
+		ShapeKeyName	= data_raw.ShapeKeyName,	-- example: "Breasts"
+		Value			= data_raw.Value,			-- example: 0.5
+		Min				= data_raw.Min,				-- example: 0.0
+			-- we don't display them, so allow omiting
+			-- TODO later:  validate "Value" according to them
+		Max				= data_raw.Max,				-- example: 1.0
+			-- we don't display them, so allow omiting
+			-- TODO later:  validate "Value" according to them
+		Step			= data_raw.Step,			-- example: 0.1
+			-- we don't display them, so allow omiting
+			-- TODO later:  validate "Value" according to them
+	}
+
+	return setmetatable(data, M.ShapeKey)
 end
 
 
@@ -568,6 +571,7 @@ end
 
 
 function M.UEAssetData.new(data_raw)
+	logger.inspect('data_raw', data_raw)
 	assert(strings.is_string(data_raw.AssetName),	'UEAssetData.AssetName is requried string')
 	assert(strings.is_string(data_raw.AssetClass),	'UEAssetData.AssetClass is requried string')
 	assert(strings.is_string(data_raw.PackagePath),	'UEAssetData.PackagePath is requried string')
@@ -581,7 +585,7 @@ function M.UEAssetData.new(data_raw)
 		PackageName		= data_raw.PackageName,	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW'
 		ObjectPath		= data_raw.ObjectPath,	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW.0_SkyAceNSFW'
 		ue_object		= {	-- Object, suitable passing to UE functions.  Used Fname for that.
-			AssetName		= ue.FindOrAddFName(data_raw.AssetName),		-- example:  '0_SkyAceNSFW'
+			AssetName		= ue.FindOrAddFName(data_raw.AssetName),	-- example:  '0_SkyAceNSFW'
 			AssetClass		= ue.FindOrAddFName(data_raw.AssetClass),	-- example:  'SkeletalMesh'
 			PackagePath		= ue.FindOrAddFName(data_raw.PackagePath),	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW'
 			PackageName		= ue.FindOrAddFName(data_raw.PackageName),	-- example:  '/Game/OutfitMods/k7_SkyAceNSFW/0_SkyAceNSFW'

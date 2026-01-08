@@ -1,7 +1,7 @@
-local kismet_lib = StaticFindObject('/Script/Engine.Default__KismetSystemLibrary')	-- docs:  https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/SystemLibrary?application_version=4.27
-
 local logger	= require('logger')
 local strings	= require('strings')
+local tables	= require('tables')
+local ue		= require('ue')
 
 
 
@@ -56,8 +56,8 @@ TODO:
 function M.parse(character)
 	local assets = require('assets')	-- avoid recursive imports
 
-	local character_path		= kismet_lib:GetPathName(character):ToString()
-	local character_object_name	= kismet_lib:GetObjectName(character):ToString()
+	local character_path		= ue.inspect__get__PathName(character)
+	local character_object_name	= ue.inspect__get__ObjectName(character)
 	local is_adam				= strings.starts_with(character_object_name,	'CH_NPC_Adam_01_Blueprint_C')	-- may have 2 instances of adam in game at once
 	local is_lily				= strings.starts_with(character_object_name,	'CH_NPC_01_Blueprint_C')
 	local is_drone				= strings.starts_with(character_object_name,	'CH_Drone_BP_C')
@@ -78,6 +78,29 @@ function M.parse(character)
 	end
 	-- logger.warn('unsupported character', character_object_name)
 	return {}
+end
+
+
+
+function M.mesh_asset__apply(
+		character_id,
+		character,
+		replacement,
+		new_mesh_asset,
+		mod_outfit,
+		mesh_type
+		)
+	local mesh_component = M.mesh_component__get(character_id, character, mesh_type)
+
+	M.mesh_component__replace_mesh(
+		mesh_component,
+		new_mesh_asset
+		)
+	M.mesh_component__adjust_materials(
+		mesh_component,
+		replacement,
+		mod_outfit
+		)
 end
 
 
@@ -154,19 +177,44 @@ function M.mesh_component__get(
 		mesh_component = mesh_components__table[mesh_type]
 	end
 
-	assert(mesh_component, 'unable to get mesh component for character '..character_id)
+	assert(mesh_component, ('unable to get mesh component %s for character %s'):format(mesh_type, character_id))
 
-	-- logger.inspect('got mesh_component', mesh_component)
+	-- logger.inspect('mesh_component', mesh_component)
 	return mesh_component
  end
 
 
 
-function M.replace_mesh(
-		character_id,
-		character,
-		new_mesh_asset,
-		mesh_type
+ --[[
+ Taken from "Enum /Script/SB.ESBSkelMeshSlot".
+ ]]
+ M._Eve_SkeletalMeshSlots = {
+	Body			= 0,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.CharacterMesh0,	DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.CharacterMesh0 CH_P_EVE_21,
+	Face			= 1,	-- InvalidUEObject
+	Hair1			= 2,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBHair,			DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBHair CH_P_EVE_Hair02,
+	Ponytail		= 3,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBPonytail,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBPonytail CH_P_EVE_Hair_PonyTail_Short,
+	PonytailShort	= 4,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBPonytailShort,	DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBPonytailShort,
+	Weapon1			= 5,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBSkeletalMeshComponent_2147481301,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBSkeletalMeshComponent_2147481301 CH_W_Sword_01,
+	Weapon2			= 6,	-- InvalidUEObject
+	Weapon3			= 7,	-- InvalidUEObject
+	Weapon4			= 8,	-- InvalidUEObject
+	Accessory1		= 9,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBAccSlot1,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBAccSlot1 ACC_EAR_03M,
+	Accessory2		= 10,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBSkeletalMeshComponent_2147479962,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBSkeletalMeshComponent_2147479962 ACC_GLA_12M,
+	Accessory3		= 11,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBAccSlot3,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBAccSlot3,	represent wing
+	Accessory4		= 12,	-- InvalidUEObject
+	Accessory5		= 13,	-- InvalidUEObject
+	Etc1			= 14,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.Mesh_Face,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.Mesh_Face CH_P_EVE_Face_Jali3,
+	Etc2			= 15,	-- InvalidUEObject
+	Num				= 16,	-- InvalidUEObject
+	All				= 100,	-- InvalidUEObject
+	MAX				= 101,	-- InvalidUEObject
+ }
+
+
+
+function M.mesh_component__replace_mesh(
+		mesh_component,
+		new_mesh_asset
 		)
 
 	local retries_max	= 10
@@ -177,18 +225,6 @@ function M.replace_mesh(
 	So add checks here.
 	]]
 	local function _replace_mesh()
-		local mesh_component	= M.mesh_component__get(character_id, character, mesh_type)
-		local is_invalid		= not mesh_component
-
-		if is_invalid then
-			logger.error('cannot get mesh component for', mesh_type)
-			retry_current = retries_max + 1	-- stop retrying
-			return
-		end
-		logger.debug('character_id', character_id)
-		logger.debug('mesh_type', mesh_type)
-		logger.inspect('mesh_component', mesh_component)
-
 		-- skip validation on init
 		local some_obj_invalid	= not mesh_component:IsValid() or not new_mesh_asset:IsValid()
 		if some_obj_invalid then
@@ -237,30 +273,78 @@ end
 
 
 
---[[
-Taken from "Enum /Script/SB.ESBSkelMeshSlot".
-]]
-M._Eve_SkeletalMeshSlots = {
-	Body			= 0,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.CharacterMesh0,	DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.CharacterMesh0 CH_P_EVE_21,
-	Face			= 1,	-- InvalidUEObject
-	Hair1			= 2,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBHair,			DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBHair CH_P_EVE_Hair02,
-	Ponytail		= 3,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBPonytail,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBPonytail CH_P_EVE_Hair_PonyTail_Short,
-	PonytailShort	= 4,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBPonytailShort,	DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBPonytailShort,
-	Weapon1			= 5,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBSkeletalMeshComponent_2147481301,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBSkeletalMeshComponent_2147481301 CH_W_Sword_01,
-	Weapon2			= 6,	-- InvalidUEObject
-	Weapon3			= 7,	-- InvalidUEObject
-	Weapon4			= 8,	-- InvalidUEObject
-	Accessory1		= 9,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBAccSlot1,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBAccSlot1 ACC_EAR_03M,
-	Accessory2		= 10,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBSkeletalMeshComponent_2147479962,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBSkeletalMeshComponent_2147479962 ACC_GLA_12M,
-	Accessory3		= 11,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.SBAccSlot3,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.SBAccSlot3,	represent wing
-	Accessory4		= 12,	-- InvalidUEObject
-	Accessory5		= 13,	-- InvalidUEObject
-	Etc1			= 14,	-- PathName = /Game/Art/BG/WorldMap/Level_P/E04.E04:PersistentLevel.CH_P_EVE_01_Blueprint_C_2147482127.Mesh_Face,		DisplayName = CH_P_EVE_01_Blueprint_C_2147482127.Mesh_Face CH_P_EVE_Face_Jali3,
-	Etc2			= 15,	-- InvalidUEObject
-	Num				= 16,	-- InvalidUEObject
-	All				= 100,	-- InvalidUEObject
-	MAX				= 101,	-- InvalidUEObject
-}
+function M.mesh_component__adjust_materials(
+			mesh_component,
+			replacement,
+			mod_outfit
+		)
+
+	local assets = require('assets')
+
+	if not (mod_outfit.UserConfigs or replacement.UserConfigs) then
+		logger.info('no mod_outfit.UserConfigs or replacement.UserConfigs')
+		return
+	end
+
+	--[[
+	Can modify only dynamic materials.
+	Multiple controls can use one material,  so don't recreate it.
+	]]
+	local function _get_or_create__dynamic_material(material_index)
+		local material		= mesh_component:GetMaterial(material_index)
+		local material_new	= material
+		local is_dynamic	= ue.inspect__get__ClassName(material_new) == 'MaterialInstanceDynamic'	--
+		if not is_dynamic then	--
+			material_new	= mesh_component:CreateDynamicMaterialInstance(material_index, material, material:GetFName())	-- NAME_None	material:GetName()	:GetFName()
+		end
+		return material_new
+	end
+
+	--[[
+	- Apply "UserConfigs":
+		- from "mod_outfit" (defaults)
+		- from "replacement"
+	]]
+
+	local scalar_controls = tables.chain(mod_outfit.UserConfigs.ScalarControls, replacement.UserConfigs.ScalarControls)
+	for _, scalar_control in pairs(scalar_controls) do
+		local dynamic_material = _get_or_create__dynamic_material(scalar_control.MaterialIndex)
+		dynamic_material:SetScalarParameterValue(ue.FindOrAddFName(scalar_control.ParamName), scalar_control.Value)
+	end
+
+	local vector_controls = tables.chain(mod_outfit.UserConfigs.VectorControls, replacement.UserConfigs.VectorControls)
+	for _, vector_control in pairs(vector_controls) do
+		local dynamic_material = _get_or_create__dynamic_material(vector_control.MaterialIndex)
+		dynamic_material:SetVectorParameterValue(ue.FindOrAddFName(vector_control.ParamName), { R = vector_control.Value[1], G = vector_control.Value[2], B = vector_control.Value[3], A = vector_control.Value[4] })
+	end
+
+	local texture_options = tables.chain(mod_outfit.UserConfigs.TextureOptions, replacement.UserConfigs.TextureOptions)
+	for _, texture_option in pairs(texture_options) do
+		local texture_path
+		local is_value_from_mod_outfit	= type(texture_option.Value) == 'number'	-- we have different values for simplicity in saved settings
+		if is_value_from_mod_outfit then
+			texture_path = texture_option.Textures[texture_option.Value]
+		else
+			texture_path = texture_option.Value
+		end
+		local dynamic_material	= _get_or_create__dynamic_material(texture_option.MaterialIndex)
+		local texture_asset		= assets.UEAssetData.from_path(texture_path):load()
+		dynamic_material:SetTextureParameterValue(ue.FindOrAddFName(texture_option.ParamName), texture_asset)
+	end
+
+	local material_toggles = tables.chain(mod_outfit.UserConfigs.MaterialToggles, replacement.UserConfigs.MaterialToggles)
+	for _, material_toggle in pairs(material_toggles) do
+		local section_id__unused	= 0	-- works with any value
+		local lod_id				= 0	-- main LOD
+		mesh_component:ShowMaterialSection(material_toggle.MaterialIndex, section_id__unused, material_toggle.Value, lod_id)
+	end
+
+	local shape_keys = tables.chain(mod_outfit.UserConfigs.ShapeKeys, replacement.UserConfigs.ShapeKeys)
+	for _, shape_key in pairs(shape_keys) do
+		local remove_zero_weight	= false		-- let's don't remove from list shape keys with zero values for now
+		mesh_component:SetMorphTarget(ue.FindOrAddFName(shape_key.ShapeKeyName), shape_key.Value, remove_zero_weight)
+	end
+end
 
 
 

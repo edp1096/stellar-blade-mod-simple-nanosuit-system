@@ -118,11 +118,13 @@ local function apply_mod_to_character(character_id)
 
 			logger.info('will apply mod to character', character_id)
 
-			characters.replace_mesh(
+			characters.mesh_asset__apply(
 				character_id,
 				character_instance,
+				replacement,
 				asset,
-				mod_outfit.FitMeshType
+				mod_outfit,
+				mod_outfit.FitMeshType	-- not in "replacement", get from "assets.ModInfo" by match
 				)
 
 			::next_replacement::
@@ -172,10 +174,12 @@ end)
 
 
 local function _replace_mesh(character_id)
-	ExecuteInGameThread(function()	-- crashes otherwise
+	ExecuteInGameThread(_func__log_traceback(function()
+			-- crashes without wrapping to "ExecuteInGameThread"
+			-- "_func__log_traceback" should not be outside of async call - won't work
 		read_mods_and_save_file_from_disk()
 		apply_mod_to_character(character_id)
-	end)
+	end))
 end
 local function _replace_mesh__eve()
 	_replace_mesh(assets.CharacterID.eve)
@@ -200,6 +204,7 @@ local _replace_mesh__eve__debounced		= _func__log_traceback(ue.debounce(_replace
 local _replace_mesh__adam__debounced	= _func__log_traceback(ue.debounce(_replace_mesh__adam, 2000))	-- lil bit more to wait he's settled,  bc he doesn't have "NotifyBP_SetMesh" or "ApplyMeshInfo"
 local _replace_mesh__lily__debounced	= _func__log_traceback(ue.debounce(_replace_mesh__lily, 2000))	-- lil bit more to wait he's settled,  bc she doesn't have "NotifyBP_SetMesh" or "ApplyMeshInfo"
 local _replace_mesh__drone__debounced	= _func__log_traceback(ue.debounce(_replace_mesh__drone, 1000))
+	-- "_func__log_traceback"  works here only for "ue.debounce",  it's async inside
 
 
 

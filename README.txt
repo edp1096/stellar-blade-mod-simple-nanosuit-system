@@ -7,7 +7,7 @@ Info:
 		CNS provides GUI, support for big amount of configs.
 			Is closed-source, written in Lua, BP/C++ using Unreal Engine.
 			You need to ask mod author in order to add features or fix issues.
-		SNS is configured via text file, supports basic replacements.
+		SNS is configured via text file, supports basic replacements, user configs.
 			Is open-source, written only in Lua.
 			You can do any fixes or implement any features you want.
 			But not all "CNS"-compatible mods work well with "SNS",  you should check this by yourself.
@@ -25,7 +25,7 @@ Info:
 		CNS was created by  "Dekita",  so  ".dekcns.json"  format.
 		You can download CNS here:  https://www.nexusmods.com/stellarblade/mods/1496
 		CNS Docs:  https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/README.md
-		They also have a discord server:  https://discord.gg/WyTdramBkm ,  I'm available there from time to time.
+		They also have a discord server:  https://discord.gg/WyTdramBkm ,  I'm available there from time to time, nick "@vlad0337187".
 
 
 Installation:
