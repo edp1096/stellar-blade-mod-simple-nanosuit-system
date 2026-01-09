@@ -87,7 +87,7 @@ function M.Replacement.new(data_raw)
 	local data = {
 		UniqueFitID	= data_raw.UniqueFitID,
 		OutfitMesh	= data_raw.OutfitMesh,
-		UserConfigs	= data_raw.UserConfigs and M.UserConfigs.new(data_raw.UserConfigs),
+		UserConfigs	= M.UserConfigs.new(data_raw.UserConfigs or {}),
 		Enabled		= data_raw.Enabled,
 	}
 

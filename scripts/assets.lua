@@ -178,7 +178,7 @@ function M.ModOutfit.new(data_raw)
 		OutfitDatas		= tables.map(data_raw.OutfitDatas or {}, function(data_raw_2)
 								return M.OutfitData.new(data_raw_2)
 							end),
-		UserConfigs		= data_raw.UserConfigs and M.UserConfigs.new(data_raw.UserConfigs),
+		UserConfigs		= M.UserConfigs.new(data_raw.UserConfigs or {}),
 	}
 
 	return setmetatable(data, M.ModOutfit)

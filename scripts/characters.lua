@@ -279,6 +279,7 @@ function M.mesh_component__adjust_materials(
 			mod_outfit
 		)
 
+	logger.info('characters.mesh_component__adjust_materials()  called')
 	local assets = require('assets')
 
 	if not (mod_outfit.UserConfigs or replacement.UserConfigs) then
@@ -291,10 +292,15 @@ function M.mesh_component__adjust_materials(
 	Multiple controls can use one material,  so don't recreate it.
 	]]
 	local function _get_or_create__dynamic_material(material_index)
-		local material		= mesh_component:GetMaterial(material_index)
+		local material = mesh_component:GetMaterial(material_index)
+
+		if not material:IsValid() then	-- mod may contain multiple meshes,  some meshes may miss some materials
+			return nil
+		end
+
 		local material_new	= material
-		local is_dynamic	= ue.inspect__get__ClassName(material_new) == 'MaterialInstanceDynamic'	--
-		if not is_dynamic then	--
+		local is_dynamic	= ue.inspect__get__ClassName(material_new) == 'MaterialInstanceDynamic'
+		if not is_dynamic then
 			material_new	= mesh_component:CreateDynamicMaterialInstance(material_index, material, material:GetFName())	-- NAME_None	material:GetName()	:GetFName()
 		end
 		return material_new
@@ -309,17 +315,26 @@ function M.mesh_component__adjust_materials(
 	local scalar_controls = tables.chain(mod_outfit.UserConfigs.ScalarControls, replacement.UserConfigs.ScalarControls)
 	for _, scalar_control in pairs(scalar_controls) do
 		local dynamic_material = _get_or_create__dynamic_material(scalar_control.MaterialIndex)
-		dynamic_material:SetScalarParameterValue(ue.FindOrAddFName(scalar_control.ParamName), scalar_control.Value)
+		if dynamic_material then
+			dynamic_material:SetScalarParameterValue(ue.FindOrAddFName(scalar_control.ParamName), scalar_control.Value)
+		end
 	end
 
 	local vector_controls = tables.chain(mod_outfit.UserConfigs.VectorControls, replacement.UserConfigs.VectorControls)
 	for _, vector_control in pairs(vector_controls) do
 		local dynamic_material = _get_or_create__dynamic_material(vector_control.MaterialIndex)
-		dynamic_material:SetVectorParameterValue(ue.FindOrAddFName(vector_control.ParamName), { R = vector_control.Value[1], G = vector_control.Value[2], B = vector_control.Value[3], A = vector_control.Value[4] })
+		if dynamic_material then
+			dynamic_material:SetVectorParameterValue(ue.FindOrAddFName(vector_control.ParamName), { R = vector_control.Value[1], G = vector_control.Value[2], B = vector_control.Value[3], A = vector_control.Value[4] })
+		end
 	end
 
 	local texture_options = tables.chain(mod_outfit.UserConfigs.TextureOptions, replacement.UserConfigs.TextureOptions)
 	for _, texture_option in pairs(texture_options) do
+		local dynamic_material	= _get_or_create__dynamic_material(texture_option.MaterialIndex)
+		if not dynamic_material then
+			goto continue__texture_options
+		end
+
 		local texture_path
 		local is_value_from_mod_outfit	= type(texture_option.Value) == 'number'	-- we have different values for simplicity in saved settings
 		if is_value_from_mod_outfit then
@@ -327,9 +342,10 @@ function M.mesh_component__adjust_materials(
 		else
 			texture_path = texture_option.Value
 		end
-		local dynamic_material	= _get_or_create__dynamic_material(texture_option.MaterialIndex)
-		local texture_asset		= assets.UEAssetData.from_path(texture_path):load()
+		local texture_asset = assets.UEAssetData.from_path(texture_path):load()
 		dynamic_material:SetTextureParameterValue(ue.FindOrAddFName(texture_option.ParamName), texture_asset)
+
+		::continue__texture_options::
 	end
 
 	local material_toggles = tables.chain(mod_outfit.UserConfigs.MaterialToggles, replacement.UserConfigs.MaterialToggles)

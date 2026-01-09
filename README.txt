@@ -11,6 +11,7 @@ Info:
 			Is open-source, written only in Lua.
 			You can do any fixes or implement any features you want.
 			But not all "CNS"-compatible mods work well with "SNS",  you should check this by yourself.
+			Doesn't support yet "OutfitDatas.Parameters".
 
 	Code is open-source, available on Sourcehut:  https://hg.sr.ht/~vlad0337187/stellar-blade-mod-simple-nanosuit-system
 		PRs and any other help are appreciated.
