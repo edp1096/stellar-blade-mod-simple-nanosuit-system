@@ -7,11 +7,10 @@ Info:
 		CNS provides GUI, support for big amount of configs.
 			Is closed-source, written in Lua, BP/C++ using Unreal Engine.
 			You need to ask mod author in order to add features or fix issues.
-		SNS is configured via text file, supports basic replacements, user configs.
+		SNS is configured via text file, supports basic replacements, user configs, parameters.
 			Is open-source, written only in Lua.
 			You can do any fixes or implement any features you want.
 			But not all "CNS"-compatible mods work well with "SNS",  you should check this by yourself.
-			Doesn't support yet "OutfitDatas.Parameters".
 
 	Code is open-source, available on Sourcehut:  https://hg.sr.ht/~vlad0337187/stellar-blade-mod-simple-nanosuit-system
 		PRs and any other help are appreciated.

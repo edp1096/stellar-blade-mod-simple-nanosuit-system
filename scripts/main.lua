@@ -92,10 +92,8 @@ local function apply_mod_to_character(character_id)
 			local mesh_paths = tables.map(mod_outfit.OutfitDatas, function(outfit_data)
 				return outfit_data.Mesh
 			end)
-			logger.inspect('mesh_paths', mesh_paths)
-			logger.inspect('mod_outfit.OutfitPaths',  mod_outfit.OutfitPaths)
 
-			local outfit_mesh
+			local mesh_path
 			if replacement.OutfitMesh then
 				local is_outfit_data_missing = (
 					not		tables.has_value(mod_outfit.OutfitPaths,	replacement.OutfitMesh)
@@ -105,16 +103,16 @@ local function apply_mod_to_character(character_id)
 					logger.error('mesh', replacement.OutfitMesh, 'is missing in mod', replacement.UniqueFitID)
 					goto next_replacement
 				end
-				outfit_mesh	= replacement.OutfitMesh
+				mesh_path	= replacement.OutfitMesh
 			else	-- take from first "OutfitPaths" oor first "OutfitDatas.Mesh"
-				outfit_mesh	= mod_outfit.OutfitPaths[1] or mesh_paths[1]
+				mesh_path	= mod_outfit.OutfitPaths[1] or mesh_paths[1]
 			end
 
-			logger.debug('selected outfit_mesh', outfit_mesh)
-			assert(outfit_mesh, 'outfit mesh is missing in mod')
+			logger.debug('selected mesh_path', mesh_path)
+			assert(mesh_path, 'outfit mesh is missing in mod')
 
-			local asset_data	= assets.UEAssetData.from_path(outfit_mesh)
-			local asset			= asset_data:load()
+			local mesh_asset_data	= assets.UEAssetData.from_path(mesh_path)
+			local mesh_asset		= mesh_asset_data:load()
 
 			logger.info('will apply mod to character', character_id)
 
@@ -122,9 +120,9 @@ local function apply_mod_to_character(character_id)
 				character_id,
 				character_instance,
 				replacement,
-				asset,
 				mod_outfit,
-				mod_outfit.FitMeshType	-- not in "replacement", get from "assets.ModInfo" by match
+				mesh_path,
+				mesh_asset
 				)
 
 			::next_replacement::

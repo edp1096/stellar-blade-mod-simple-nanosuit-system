@@ -197,7 +197,7 @@ M.OutfitData.__index	= M.OutfitData
 function M.OutfitData.new(data_raw)
 	assert(strings.is_non_empty(data_raw.Mesh),							'OutfitData.Mesh is required string')
 	assert(tables.is_list_of(data_raw.Materials, strings.is_string),	'OutfitData.Materials is required array of strings')
-	assert(tables.is_list_of(data_raw.Parameters, tables.is_table),		'OutfitData.Parameters is required array of "OutfitDataParameter"')
+	assert(tables.is_list_of(data_raw.Parameters, tables.is_table),		'OutfitData.Parameters is required array of "OutfitData_Parameter"')
 	assert(strings.is_string_or_nil(data_raw.PonyPhysics),				'OutfitData.PonyPhysics should be string or omitted')
 
 	local data = {
@@ -209,7 +209,7 @@ function M.OutfitData.new(data_raw)
 				]
 			]]
 		Parameters	= tables.map(data_raw.Parameters, function(data_raw_2)
-							return M.OutfitDataParameter.new(data_raw_2)
+							return M.OutfitData_Parameter.new(data_raw_2)
 						end),
 		PonyPhysics	= data_raw.PonyPhysics,
 	}
@@ -221,19 +221,25 @@ end
 
 --[[
 Class containing outfit data parameters.
+Docs:
+	https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/guides/cns-json-advanced.md
 ]]
-M.OutfitDataParameter			= {}
-M.OutfitDataParameter.__index	= M.OutfitDataParameter
+M.OutfitData_Parameter			= {}
+M.OutfitData_Parameter.__index	= M.OutfitData_Parameter
 
 
 
-function M.OutfitDataParameter.new(data_raw)
-	assert(numbers.is_number(data_raw.MaterialIndex),	'OutfitDataParameter.MaterialIndex is required number')
-	assert(numbers.is_number(data_raw.LayerIndex),		'OutfitDataParameter.LayerIndex is required number')
-	assert(tables.has_value(M.OUTFIT_DATA_PARAM_TYPES, data_raw.ParamType),	'OutfitDataParameter.ParamType is required one of: '..json.encode(M.OUTFIT_DATA_PARAM_TYPES))
-	assert(strings.is_string(data_raw.ParamName),		'OutfitDataParameter.ParamName is required string')		-- TODO: validate according to enum ?	Known values: ["BaseColor", "BakeNormal"]
-	assert(strings.is_string(data_raw.Association),		'OutfitDataParameter.Association is required string')	-- TODO: validate according to enum ?	Known values: ["Global", "Layer"]
-	assert(strings.is_string(data_raw.Value),			'OutfitDataParameter.Value is required string')			-- TODO: validate according to existing object in UE / .ucas ?
+function M.OutfitData_Parameter.new(data_raw)
+	assert(numbers.is_number(data_raw.MaterialIndex),	'OutfitData_Parameter.MaterialIndex is required number')
+	assert(numbers.is_number(data_raw.LayerIndex),		'OutfitData_Parameter.LayerIndex is required number')
+	assert(tables.has_value(M.OutfitData_Parameter_Type, data_raw.ParamType),	'OutfitData_Parameter.ParamType is required one of: '..json.encode(tables.values(M.OutfitData_Parameter_Type)))
+	assert(strings.is_string(data_raw.ParamName),		'OutfitData_Parameter.ParamName is required string')
+	assert(strings.is_string(data_raw.Association),		'OutfitData_Parameter.Association is required string')	-- TODO: validate according to enum ?	Known values: ["Global", "Layer"]
+	assert(
+			strings.is_string(data_raw.Value)						-- ParamType == 'Texture'
+		or	numbers.is_number(data_raw.Value)						-- ParamType == 'Scalar'
+		or	tables.is_list_of(data_raw.Value, numbers.is_number)	-- ParamType == 'Vector'
+		,												'OutfitData_Parameter.Value is required string')		-- TODO: validate according to existing object in UE / .ucas ?
 
 	local data = {
 		MaterialIndex	= data_raw.MaterialIndex,	-- example: 0
@@ -244,17 +250,23 @@ function M.OutfitDataParameter.new(data_raw)
 		Value			= data_raw.Value,			-- example: "/Game/OutfitMods/k7_SkinSuit/Textures/k7_SkinSuit_BaseBody_V02_F2_N.k7_SkinSuit_BaseBody_V02_F2_N"
 	}
 
-	return setmetatable(data, M.OutfitDataParameter)
+	return setmetatable(data, M.OutfitData_Parameter)
 end
 
 
 
-M.OUTFIT_DATA_PARAM_TYPES = {'Texture', 'Scalar', 'Vector'}
+M.OutfitData_Parameter_Type = {
+	Texture	= 'Texture',
+	Scalar	= 'Scalar',
+	Vector	= 'Vector',
+}
 
 
 
 --[[
 Class containing user config for suit.
+Docs:
+	https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/guides/cns-json-advanced.md
 ]]
 M.UserConfigs			= {}
 M.UserConfigs.__index	= M.UserConfigs
@@ -294,6 +306,8 @@ end
 --[[
 Class containing toggle config for some material.
 Originally was displayed in GUI in CNS, but we'll set it manually, so only few fields are required for SNS.
+Docs:
+	https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/guides/cns-json-advanced.md
 ]]
 M.MaterialToggle			= {}
 M.MaterialToggle.__index	= M.MaterialToggle
@@ -323,6 +337,8 @@ end
 --[[
 Class containing scalar control config for some material.
 Originally was displayed in GUI in CNS, but we'll set it manually, so only few fields are required for SNS.
+Docs:
+	https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/guides/cns-json-advanced.md
 ]]
 M.ScalarControl			= {}
 M.ScalarControl.__index	= M.ScalarControl
@@ -356,6 +372,8 @@ end
 --[[
 Class containing vector control config for some material.
 Originally was displayed in GUI in CNS, but we'll set it manually, so only few fields are required for SNS.
+Docs:
+	https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/guides/cns-json-advanced.md
 ]]
 M.VectorControl			= {}
 M.VectorControl.__index	= M.VectorControl
@@ -408,6 +426,8 @@ end
 --[[
 Class containing texture select option for some material.
 Originally was displayed in GUI in CNS, but we'll set it manually, so only few fields are required for SNS.
+Docs:
+	https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/guides/cns-json-advanced.md
 ]]
 M.TextureOption			= {}
 M.TextureOption.__index	= M.TextureOption
@@ -453,6 +473,8 @@ end
 --[[
 Class containing shape key for some mesh.
 Originally was displayed in GUI in CNS, but we'll set it manually, so only few fields are required for SNS.
+Docs:
+	https://github.com/Dekita/SB-CustomNanosuitSystem-Docs/blob/main/guides/cns-json-advanced.md
 ]]
 M.ShapeKey			= {}
 M.ShapeKey.__index	= M.ShapeKey
@@ -571,7 +593,6 @@ end
 
 
 function M.UEAssetData.new(data_raw)
-	logger.inspect('data_raw', data_raw)
 	assert(strings.is_string(data_raw.AssetName),	'UEAssetData.AssetName is requried string')
 	assert(strings.is_string(data_raw.AssetClass),	'UEAssetData.AssetClass is requried string')
 	assert(strings.is_string(data_raw.PackagePath),	'UEAssetData.PackagePath is requried string')

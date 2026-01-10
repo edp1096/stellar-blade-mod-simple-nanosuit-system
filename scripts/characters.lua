@@ -86,20 +86,22 @@ function M.mesh_asset__apply(
 		character_id,
 		character,
 		replacement,
-		new_mesh_asset,
-		mod_outfit,
-		mesh_type
+		mod_outfit,		-- to be applied to "character"
+		mesh_path,		-- selected one
+		mesh_asset		-- to apply to character
 		)
-	local mesh_component = M.mesh_component__get(character_id, character, mesh_type)
+
+	local mesh_component = M.mesh_component__get(character_id, character, mod_outfit.FitMeshType)	-- "FitMeshType" not in "replacement",  but it "assets.ModInfo"
 
 	M.mesh_component__replace_mesh(
 		mesh_component,
-		new_mesh_asset
+		mesh_asset
 		)
 	M.mesh_component__adjust_materials(
 		mesh_component,
 		replacement,
-		mod_outfit
+		mod_outfit,
+		mesh_path
 		)
 end
 
@@ -214,7 +216,7 @@ function M.mesh_component__get(
 
 function M.mesh_component__replace_mesh(
 		mesh_component,
-		new_mesh_asset
+		mesh_asset	-- to load into "mesh_component"
 		)
 
 	local retries_max	= 10
@@ -226,12 +228,12 @@ function M.mesh_component__replace_mesh(
 	]]
 	local function _replace_mesh()
 		-- skip validation on init
-		local some_obj_invalid	= not mesh_component:IsValid() or not new_mesh_asset:IsValid()
+		local some_obj_invalid	= not mesh_component:IsValid() or not mesh_asset:IsValid()
 		if some_obj_invalid then
 			error('some are invalid')
 		end
 
-		mesh_component:SetSkeletalMesh(new_mesh_asset, true)
+		mesh_component:SetSkeletalMesh(mesh_asset, true)
 		mesh_component:ResetOverrideMaterials()		-- otherwise would leave old materials
 	end
 
@@ -276,61 +278,90 @@ end
 function M.mesh_component__adjust_materials(
 			mesh_component,
 			replacement,
-			mod_outfit
+			mod_outfit,		-- all info about mod
+			mesh_path		-- selected
 		)
 
 	logger.info('characters.mesh_component__adjust_materials()  called')
-	local assets = require('assets')
+
+
+	--[[
+	Checks.
+	]]
 
 	if not (mod_outfit.UserConfigs or replacement.UserConfigs) then
 		logger.info('no mod_outfit.UserConfigs or replacement.UserConfigs')
 		return
 	end
 
+
 	--[[
-	Can modify only dynamic materials.
-	Multiple controls can use one material,  so don't recreate it.
+	Imports.
 	]]
-	local function _get_or_create__dynamic_material(material_index)
-		local material = mesh_component:GetMaterial(material_index)
 
-		if not material:IsValid() then	-- mod may contain multiple meshes,  some meshes may miss some materials
-			return nil
-		end
+	local assets	= require('assets')	-- avoid recursive imports
+	local saves		= require('saves')
 
-		local material_new	= material
-		local is_dynamic	= ue.inspect__get__ClassName(material_new) == 'MaterialInstanceDynamic'
-		if not is_dynamic then
-			material_new	= mesh_component:CreateDynamicMaterialInstance(material_index, material, material:GetFName())	-- NAME_None	material:GetName()	:GetFName()
-		end
-		return material_new
-	end
 
 	--[[
-	- Apply "UserConfigs":
+	Get parameters.
+	]]
+
+	local outfit_data = tables.find(mod_outfit.OutfitDatas, function(outfit_data__current)
+		local is_current_data = outfit_data__current.Mesh == mesh_path
+		if is_current_data then
+			return outfit_data__current
+		end
+		end)  or  {}
+
+	local outfit_data__parameters = outfit_data.Parameters or {}
+
+	local scalar_controls__from_parameters = tables.map_filter(outfit_data__parameters, function(param)
+		local is_scalar_control = param.ParamType == assets.OutfitData_Parameter_Type.Scalar
+		if is_scalar_control then
+			return saves.ScalarControl.new(param)
+		end
+		end)
+	local vector_controls__from_parameters = tables.map_filter(outfit_data__parameters, function(param)
+		local is_vector_control = param.ParamType == assets.OutfitData_Parameter_Type.Vector
+		if is_vector_control then
+			return saves.VectorControl.new(param)
+		end
+		end)
+	local texture_options__from_parameters = tables.map_filter(outfit_data__parameters, function(param)
+		local is_texture_option = param.ParamType == assets.OutfitData_Parameter_Type.Texture
+		if is_texture_option then
+			return saves.TextureOption.new(param)
+		end
+		end)
+
+
+	--[[
+	Apply "UserConfigs":
+		- made from "Parameters"
 		- from "mod_outfit" (defaults)
 		- from "replacement"
 	]]
 
-	local scalar_controls = tables.chain(mod_outfit.UserConfigs.ScalarControls, replacement.UserConfigs.ScalarControls)
+	local scalar_controls = tables.chain( scalar_controls__from_parameters,  mod_outfit.UserConfigs.ScalarControls,  replacement.UserConfigs.ScalarControls )
 	for _, scalar_control in pairs(scalar_controls) do
-		local dynamic_material = _get_or_create__dynamic_material(scalar_control.MaterialIndex)
+		local dynamic_material = M.mesh_component__dynamic_material__get_or_create(mesh_component, scalar_control.MaterialIndex)
 		if dynamic_material then
 			dynamic_material:SetScalarParameterValue(ue.FindOrAddFName(scalar_control.ParamName), scalar_control.Value)
 		end
 	end
 
-	local vector_controls = tables.chain(mod_outfit.UserConfigs.VectorControls, replacement.UserConfigs.VectorControls)
+	local vector_controls = tables.chain( vector_controls__from_parameters,  mod_outfit.UserConfigs.VectorControls,  replacement.UserConfigs.VectorControls )
 	for _, vector_control in pairs(vector_controls) do
-		local dynamic_material = _get_or_create__dynamic_material(vector_control.MaterialIndex)
+		local dynamic_material = M.mesh_component__dynamic_material__get_or_create(mesh_component, vector_control.MaterialIndex)
 		if dynamic_material then
 			dynamic_material:SetVectorParameterValue(ue.FindOrAddFName(vector_control.ParamName), { R = vector_control.Value[1], G = vector_control.Value[2], B = vector_control.Value[3], A = vector_control.Value[4] })
 		end
 	end
 
-	local texture_options = tables.chain(mod_outfit.UserConfigs.TextureOptions, replacement.UserConfigs.TextureOptions)
+	local texture_options = tables.chain( texture_options__from_parameters,  mod_outfit.UserConfigs.TextureOptions,  replacement.UserConfigs.TextureOptions )
 	for _, texture_option in pairs(texture_options) do
-		local dynamic_material	= _get_or_create__dynamic_material(texture_option.MaterialIndex)
+		local dynamic_material	= M.mesh_component__dynamic_material__get_or_create(mesh_component, texture_option.MaterialIndex)
 		if not dynamic_material then
 			goto continue__texture_options
 		end
@@ -360,6 +391,27 @@ function M.mesh_component__adjust_materials(
 		local remove_zero_weight	= false		-- let's don't remove from list shape keys with zero values for now
 		mesh_component:SetMorphTarget(ue.FindOrAddFName(shape_key.ShapeKeyName), shape_key.Value, remove_zero_weight)
 	end
+end
+
+
+
+--[[
+Can modify only dynamic materials.
+Multiple controls can use one material,  so don't recreate it.
+]]
+function M.mesh_component__dynamic_material__get_or_create(mesh_component, material_index)
+	local material = mesh_component:GetMaterial(material_index)
+
+	if not material:IsValid() then	-- mod may contain multiple meshes,  some meshes may miss some materials
+		return nil
+	end
+
+	local material_new	= material
+	local is_dynamic	= ue.inspect__get__ClassName(material_new) == 'MaterialInstanceDynamic'
+	if not is_dynamic then
+		material_new	= mesh_component:CreateDynamicMaterialInstance(material_index, material, material:GetFName())	-- NAME_None	material:GetName()	:GetFName()
+	end
+	return material_new
 end
 
 

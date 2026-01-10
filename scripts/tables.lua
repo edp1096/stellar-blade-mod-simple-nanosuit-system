@@ -60,15 +60,36 @@ end
 
 
 --[[
-Filter all results into a new table.
+Return data found by provided "function_".
+Args
+	function_(key, value)
 ]]
-function M.filter(table, function_)
-	for _, value in pairs(table) do
-		if function_(value) then
-			return value
+function M.find(table, function_)
+	for key, value in pairs(table) do
+		local result = function_(value, key)
+		if result then
+			return result
 		end
 	end
-	return {}
+end
+
+
+
+--[[
+Apply "function_" to each element of "table_",  append it to "result" if not "nil".
+Args
+	function_(value, key)
+		expects such args order to simplify processing list-like tables
+]]
+function M.map_filter(table_, function_)
+	local result = {}
+	for key, value in pairs(table_) do
+		local func_result = function_(value, key)
+		if func_result ~= nil then	-- we also support "false"
+			table.insert(result, func_result)
+		end
+	end
+	return result
 end
 
 
@@ -78,8 +99,9 @@ Return new table with numeric indexes
 	by iterating over values with numberic indexes of existing table,
 	applying "function" to each of them.
 Alternative to Python's "list.map()".
-TODO:
-	replace to just "map"
+Args
+	function_(value, key)
+		expects such args order to simplify processing list-like tables
 ]]
 function M.map(table, function_)
 	local result = {}
