@@ -367,12 +367,47 @@ function M.mesh_component__adjust_materials(
 		end
 
 		local texture_path
-		local is_value_from_mod_outfit	= type(texture_option.Value) == 'number'	-- we have different values for simplicity in saved settings
-		if is_value_from_mod_outfit then
-			texture_path = texture_option.Textures[texture_option.Value]
+		local is_value_index = type(texture_option.Value) == 'number'
+
+		if is_value_index then
+			-- Value is an index, need to find Textures array
+			if texture_option.Textures then
+				-- Textures array is available (from mod_outfit or parameters)
+				texture_path = texture_option.Textures[texture_option.Value]
+			else
+				-- Textures array not available, need to find it from mod_outfit
+				-- Find matching TextureOption in mod_outfit by ParamName + MaterialIndex
+				local mod_texture_option = tables.find(mod_outfit.UserConfigs.TextureOptions, function(mod_opt)
+					if mod_opt.ParamName == texture_option.ParamName
+						and mod_opt.MaterialIndex == texture_option.MaterialIndex then
+						return mod_opt
+					end
+				end)
+
+				if mod_texture_option and mod_texture_option.Textures then
+					texture_path = mod_texture_option.Textures[texture_option.Value]
+				else
+					logger.error(('Cannot resolve texture index %d for ParamName=%s MaterialIndex=%d - no Textures array found in mod outfit'):format(
+						texture_option.Value,
+						texture_option.ParamName or 'nil',
+						texture_option.MaterialIndex
+					))
+					goto continue__texture_options
+				end
+			end
 		else
+			-- Value is a direct texture path
 			texture_path = texture_option.Value
 		end
+
+		if not texture_path then
+			logger.error(('Texture path is nil for ParamName=%s MaterialIndex=%d'):format(
+				texture_option.ParamName or 'nil',
+				texture_option.MaterialIndex
+			))
+			goto continue__texture_options
+		end
+
 		local texture_asset = assets.UEAssetData.from_path(texture_path):load()
 		dynamic_material:SetTextureParameterValue(ue.FindOrAddFName(texture_option.ParamName), texture_asset)
 

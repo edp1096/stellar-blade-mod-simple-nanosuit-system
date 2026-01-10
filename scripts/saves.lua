@@ -216,12 +216,21 @@ M.TextureOption.__index	= M.TextureOption
 function M.TextureOption.new(data_raw)
 	assert(strings.is_string_or_nil(data_raw.ParamName),	'TextureOption.ParamName should be string or omitted')
 	assert(numbers.is_number(data_raw.MaterialIndex),		'TextureOption.MaterialIndex is required number')
-	assert(strings.is_string(data_raw.Value),				'TextureOption.Value is required string')	-- it's number in "assets.TextureOption" - index of texture,  but here we specify path to texture
+	assert(
+		strings.is_string(data_raw.Value) or numbers.is_number(data_raw.Value),
+		'TextureOption.Value is required string (texture path) or number (texture index, 0-based)'
+	)
+
+	local value = data_raw.Value
+	-- If Value is a number (index), convert from 0-based (CNS format) to 1-based (Lua format)
+	if type(value) == 'number' then
+		value = value + 1
+	end
 
 	local data = {
 		ParamName		= data_raw.ParamName,
 		MaterialIndex	= data_raw.MaterialIndex,
-		Value			= data_raw.Value,
+		Value			= value,
 	}
 
 	return setmetatable(data, M.TextureOption)
