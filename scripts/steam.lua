@@ -33,20 +33,31 @@ function M.get_steam_user_id__from_autocloud_vdf_files()
 		return nil
 	end
 
-	path.each(save_dir_game__iterate, function(path_current, _mode)
-		local autocloud_vdf_path	= path.join(path_current, 'steam_autocloud.vdf')
-		local autocloud_vdf_content	= fs.file__read(autocloud_vdf_path)
-		local is_current_steam_user	= root_autocloud_content == autocloud_vdf_content
-		if not is_current_steam_user then
-			return
+	-- Use io.popen to list directories (lfs-dependent path.each not available in UE4SS)
+	local handle = io.popen('dir "' .. save_dir_game .. '" /b /ad')
+	if not handle then
+		return nil
+	end
+
+	local result = handle:read("*a")
+	handle:close()
+
+	-- Iterate through directories to find matching steam_autocloud.vdf
+	for dir_name in result:gmatch("[^\r\n]+") do
+		if dir_name and dir_name ~= "" then
+			local path_current = path.join(save_dir_game, dir_name)
+			local autocloud_vdf_path = path.join(path_current, 'steam_autocloud.vdf')
+			local autocloud_vdf_content = fs.file__read(autocloud_vdf_path)
+			local is_current_steam_user = root_autocloud_content == autocloud_vdf_content
+			if is_current_steam_user then
+				local _, steam_user_id_current = path.splitpath(path_current)
+				if steam_user_id_current then
+					steam_user_id = steam_user_id_current
+					break
+				end
+			end
 		end
-		local _, steam_user_id_current	= path.splitpath(path_current)
-		if steam_user_id_current then
-			steam_user_id = steam_user_id_current
-		end
-	end, {
-		skipfiles = true,
-	})
+	end
 
 	return steam_user_id
 end
@@ -63,18 +74,24 @@ Should be used if "get_steam_user_id__from_autocloud_vdf_files" failed.
 function M.get_steam_user_id__from_first_save_dir()
 	local save_dir_base				= paths_lib:ProjectSavedDir():ToString()
 	local save_dir_game				= path.join(save_dir_base, 'SaveGames')
-	local save_dir_game__iterate	= path.join(save_dir_game, '*')
 	local steam_user_id				= nil
 
-	path.each(save_dir_game__iterate, function(path_current, _mode)
-		local _, steam_user_id_current	= path.splitpath(path_current)
-		if steam_user_id_current then
-			steam_user_id = steam_user_id_current
+	-- Use io.popen to list directories (lfs-dependent path.each not available in UE4SS)
+	local handle = io.popen('dir "' .. save_dir_game .. '" /b /ad')
+	if not handle then
+		return nil
+	end
+
+	local result = handle:read("*a")
+	handle:close()
+
+	-- Get first directory (steam user id)
+	for dir_name in result:gmatch("[^\r\n]+") do
+		if dir_name and dir_name ~= "" then
+			steam_user_id = dir_name
+			break
 		end
-	end, {
-		reverse		= true,	-- we need to pick first
-		skipfiles	= true,
-	})
+	end
 
 	return steam_user_id
 end

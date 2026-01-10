@@ -3,7 +3,8 @@ Filesystem-related helpers.
 About directories, files, etc.
 ]]
 
-local lfs	= require('lfs')
+-- lfs (luafilesystem) not compatible with this UE4SS Lua environment
+-- Skip it and use io.open for file operations instead
 local path	= require('path')
 
 local paths_lib = StaticFindObject('/Script/Engine.Default__BlueprintPathsLibrary')	-- docs:  https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/Paths?highlight=paths&application_version=4.27#unreal.Paths
@@ -18,9 +19,13 @@ local M = {}
 
 
 function M.file__check_exists(path_)
-	local attr		= lfs.attributes(path_)
-	local exists	= attr ~= nil and attr.mode == 'file'
-	return exists
+	-- Use io.open instead of lfs.attributes (lfs not compatible with UE4SS)
+	local file = io.open(path_, 'r')
+	if file then
+		file:close()
+		return true
+	end
+	return false
 end
 
 

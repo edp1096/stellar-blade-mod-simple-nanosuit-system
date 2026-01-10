@@ -20,24 +20,215 @@ local M	= {}
 
 
 
-function M.mods_info__read()
+--[[
+Get path to cache file where we store UniqueFitID to file path mapping.
+Cache is stored in mod's directory for easy access.
+]]
+function M._cache_file_path__get()
+	local mod_dir = fs.mod_dir__get()
+	return path.join(mod_dir, 'sns.mods_cache.json')
+end
+
+
+
+--[[
+Build cache by scanning all .dekcns.json files and extracting only UniqueFitID.
+Must use JSON parsing to reliably extract UniqueFitID from all formats.
+Returns: { [UniqueFitID]: json_file_path, ... }
+]]
+function M._build_cache()
+	logger.info('building mods cache (scanning for UniqueFitID)...')
 	local mod_jsons = M.mod_jsons__read()
-	local mods_info	= {}	-- {[mod_json_path]: mod_info, ...}
+	local cache = {}	-- { [UniqueFitID]: json_file_path, ... }
 
 	for _, mod_json_path in pairs(mod_jsons) do
-		logger.info('processing', mod_json_path)	-- so we'll see in which JSON error happened
+		logger.info('scanning', mod_json_path)
 
 		local mod_info__str	= fs.file__read(mod_json_path)
-		local mod_info__raw	= json.decode(mod_info__str)
-		local mod_info		= M.ModInfo.new({
-			JsonFilePath	= mod_json_path,
-			ModOutfits		= mod_info__raw,
-		})
-
-		mods_info[mod_json_path] = mod_info
+		if mod_info__str then
+			local success, mod_info__raw = pcall(json.decode, mod_info__str)
+			if success and mod_info__raw then
+				-- Extract UniqueFitID from each outfit in the JSON
+				for _, outfit_raw in pairs(mod_info__raw) do
+					if outfit_raw.UniqueFitID then
+						cache[outfit_raw.UniqueFitID] = mod_json_path
+						logger.debug('found UniqueFitID:', outfit_raw.UniqueFitID)
+					end
+				end
+			else
+				logger.error('failed to parse JSON:', mod_json_path)
+			end
+		end
 	end
 
+	logger.info('cache built with', tables.length(cache), 'outfits')
+	return cache
+end
+
+
+
+--[[
+Write cache to file.
+Cache format: { [UniqueFitID]: json_file_path, ... }
+]]
+function M._cache_write(cache)
+	local cache_path = M._cache_file_path__get()
+	logger.info('writing mods cache to', cache_path)
+
+	local cache_str = json.encode(cache, { indent = true })
+	fs.file__write(cache_path, cache_str)
+
+	logger.info('mods cache written successfully')
+end
+
+
+
+--[[
+Read cache from file if it exists.
+Returns: { [UniqueFitID]: json_file_path, ... } or nil
+]]
+function M._cache_read()
+	local cache_path = M._cache_file_path__get()
+
+	if not fs.file__check_exists(cache_path) then
+		logger.info('no mods cache found at', cache_path)
+		return nil
+	end
+
+	logger.info('reading mods cache from', cache_path)
+	local cache_str = fs.file__read(cache_path)
+
+	-- Check for empty or invalid file
+	if not cache_str or cache_str == "" or cache_str:match("^%s*$") then
+		logger.warn('cache file is empty, will rebuild')
+		-- Delete invalid cache file
+		local success, err = pcall(function()
+			os.remove(cache_path)
+		end)
+		if not success then
+			logger.error('failed to delete invalid cache:', err)
+		end
+		return nil
+	end
+
+	local success, cache = pcall(json.decode, cache_str)
+	if not success then
+		logger.error('failed to deserialize cache:', cache)
+		logger.warn('deleting corrupted cache file')
+		-- Delete corrupted cache file
+		pcall(function()
+			os.remove(cache_path)
+		end)
+		return nil
+	end
+
+	-- Check if cache is valid (should be a table)
+	if type(cache) ~= "table" then
+		logger.warn('cache is not a table, will rebuild')
+		pcall(function()
+			os.remove(cache_path)
+		end)
+		return nil
+	end
+
+	logger.info('mods cache loaded with', tables.length(cache), 'outfits')
+	return cache
+end
+
+
+
+--[[
+Get or build cache.
+Returns: { [UniqueFitID]: json_file_path, ... }
+]]
+function M._get_or_build_cache()
+	local cache = M._cache_read()
+	if cache then
+		return cache
+	end
+
+	-- Build cache
+	cache = M._build_cache()
+	M._cache_write(cache)
+	return cache
+end
+
+
+
+--[[
+Load specific mod JSONs by UniqueFitID list.
+Args:
+	unique_fit_ids - list of UniqueFitID strings to load
+Returns:
+	mods_info - { [mod_json_path]: mod_info, ... }
+]]
+function M.mods_info__read(unique_fit_ids)
+	if not unique_fit_ids or tables.length(unique_fit_ids) == 0 then
+		logger.info('no UniqueFitIDs requested, skipping mod load')
+		return {}
+	end
+
+	-- Get cache
+	local cache = M._get_or_build_cache()
+
+	-- Collect unique JSON file paths to load
+	local json_paths_to_load = {}
+	for _, unique_fit_id in pairs(unique_fit_ids) do
+		local json_path = cache[unique_fit_id]
+		if json_path then
+			json_paths_to_load[json_path] = true
+		else
+			logger.warn('UniqueFitID not found in cache:', unique_fit_id)
+		end
+	end
+
+	-- Load only the required JSON files
+	local mods_info = {}
+	for json_path, _ in pairs(json_paths_to_load) do
+		logger.info('loading', json_path)
+
+		local mod_info__str	= fs.file__read(json_path)
+		if mod_info__str then
+			local success, mod_info__raw = pcall(json.decode, mod_info__str)
+			if success and mod_info__raw then
+				local mod_info = M.ModInfo.new({
+					JsonFilePath	= json_path,
+					ModOutfits		= mod_info__raw,
+				})
+				mods_info[json_path] = mod_info
+			else
+				logger.error('failed to parse JSON:', json_path)
+			end
+		end
+	end
+
+	logger.info('loaded', tables.length(mods_info), 'mod files')
 	return mods_info
+end
+
+
+
+--[[
+Ensure cache exists by rebuilding it on every game start.
+This is called during mod initialization.
+Always rebuilds to ensure cache is up to date.
+]]
+function M.ensure_cache()
+	logger.info('rebuilding cache on game start...')
+	local cache = M._build_cache()
+	M._cache_write(cache)
+end
+
+
+
+--[[
+Rebuild cache (for manual refresh if needed).
+]]
+function M.rebuild_cache()
+	logger.info('rebuilding mods cache...')
+	local cache = M._build_cache()
+	M._cache_write(cache)
+	logger.info('cache rebuild complete')
 end
 
 
@@ -104,6 +295,52 @@ M.ModInfo.__index	= M.ModInfo
 function M.ModInfo.new(data_raw)
 	assert(strings.is_string(data_raw.JsonFilePath), 'JsonFilePath is required string')
 	assert(tables.is_list_of_or_nil(data_raw.ModOutfits, tables.is_table), 'ModOutfits should be list of ModOutfit or nil')
+
+	--[[
+	Resolve UserConfigs references.
+	If UserConfigs is a string, it references another outfit's UserConfigs in the same file.
+	]]
+
+	-- Step 1: Build a map of UniqueFitID -> UserConfigs for all outfits with table UserConfigs
+	local user_configs_map = {}
+	for _, mod_outfit__raw in ipairs(data_raw.ModOutfits or {}) do
+		if tables.is_table(mod_outfit__raw.UserConfigs) then
+			user_configs_map[mod_outfit__raw.UniqueFitID] = mod_outfit__raw.UserConfigs
+		end
+	end
+
+	-- Step 2: Resolve string references to UserConfigs
+	for _, mod_outfit__raw in ipairs(data_raw.ModOutfits or {}) do
+		if strings.is_string(mod_outfit__raw.UserConfigs) then
+			local ref_id = mod_outfit__raw.UserConfigs
+			local resolved_config = nil
+
+			-- Try exact match first
+			resolved_config = user_configs_map[ref_id]
+
+			-- If not found, try to find a UniqueFitID that contains the reference string
+			if not resolved_config then
+				for unique_fit_id, user_config in pairs(user_configs_map) do
+					if unique_fit_id:find(ref_id, 1, true) then		-- plain text search
+						resolved_config = user_config
+						break
+					end
+				end
+			end
+
+			-- If still not found, use empty UserConfigs and log warning
+			if resolved_config then
+				mod_outfit__raw.UserConfigs = resolved_config
+			else
+				logger.warn(('UserConfigs reference "%s" not found for outfit "%s" in file "%s", using empty UserConfigs'):format(
+					ref_id,
+					mod_outfit__raw.UniqueFitID or 'unknown',
+					data_raw.JsonFilePath
+				))
+				mod_outfit__raw.UserConfigs = {}
+			end
+		end
+	end
 
 	local data = {
 		JsonFilePath	= data_raw.JsonFilePath,

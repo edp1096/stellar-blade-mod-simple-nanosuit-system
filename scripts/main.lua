@@ -13,11 +13,43 @@ local mods_info	= nil
 
 
 
+--[[
+Extract list of enabled UniqueFitIDs from save file.
+Returns: list of UniqueFitID strings
+]]
+local function get_enabled_unique_fit_ids_from_save(save)
+	local unique_fit_ids = {}
+
+	if not save or not save.Replacements then
+		return unique_fit_ids
+	end
+
+	for _, replacement in pairs(save.Replacements) do
+		if replacement.Enabled and replacement.UniqueFitID then
+			table.insert(unique_fit_ids, replacement.UniqueFitID)
+		end
+	end
+
+	return unique_fit_ids
+end
+
+
+
+--[[
+Load save file and mods info.
+Args:
+	reload - if true, reload save file from disk
+]]
 local function read_mods_and_save_file_from_disk(reload)
 	if reload or not save or not mods_info then
-		save		= saves.SavedSettings.read()
-		mods_info	= assets.mods_info__read()
-		logger.info('save', ue.inspect_stringify(save))
+		save = saves.SavedSettings.read()
+
+		-- Extract enabled UniqueFitIDs from save
+		local unique_fit_ids = get_enabled_unique_fit_ids_from_save(save)
+		logger.info('loading', tables.length(unique_fit_ids), 'enabled outfits')
+
+		-- Load only the mods we need
+		mods_info = assets.mods_info__read(unique_fit_ids)
 	end
 end
 
@@ -57,6 +89,12 @@ local function apply_mod_to_character(character_id)
 	end
 
 	for _, character_instance in pairs(character_instances) do
+
+		-- Hide ponytail if requested in settings
+		if save.HidePonytail then
+			logger.info('HidePonytail is enabled, hiding ponytail for', character_id)
+			characters.hide_ponytail(character_instance)
+		end
 
 		for _, replacement in pairs(save.Replacements) do
 			logger.info('processing replacement of', replacement.UniqueFitID)
@@ -132,6 +170,21 @@ local function apply_mod_to_character(character_id)
 end
 
 
+local function _func__log_traceback(func)
+	return function(...)
+		local func_args = table.pack(...)
+		xpcall(
+			function()
+				func(table.unpack(func_args))
+			end,
+			function(err)
+				print(debug.traceback(err, 2), '\n')
+			end
+		)
+	end
+end
+
+
 
 --[[
 Is launched manually on key press.
@@ -148,34 +201,20 @@ end
 
 
 
-local function _func__log_traceback(func)
-	return function(...)
-		local func_args = table.pack(...)
-		xpcall(
-			function()
-				func(table.unpack(func_args))
-			end,
-			function(err)
-				print(debug.traceback(err, 2))
-			end
-		)
-	end
-end
-
-
-
 RegisterKeyBind(config.KEY__RELOAD_MOD, function()
 	logger.info(('key %s hit,  loading custom nanosuit'):format(config.KEY__RELOAD_MOD))
-	ExecuteInGameThread(_func__log_traceback(main))	-- it crashes often if execute not in game thread
+
+	ExecuteInGameThread(_func__log_traceback(main))
 end)
 
 
 
 local function _replace_mesh(character_id)
 	ExecuteInGameThread(_func__log_traceback(function()
-			-- crashes without wrapping to "ExecuteInGameThread"
-			-- "_func__log_traceback" should not be outside of async call - won't work
-		read_mods_and_save_file_from_disk()
+		-- crashes without wrapping to "ExecuteInGameThread"
+		-- "_func__log_traceback" should not be outside of async call - won't work
+		local reload = false	-- don't reload if already loaded
+		read_mods_and_save_file_from_disk(reload)
 		apply_mod_to_character(character_id)
 	end))
 end
@@ -206,6 +245,7 @@ local _replace_mesh__drone__debounced	= _func__log_traceback(ue.debounce(_replac
 
 
 
+-- ExecuteAsync(function()
 ExecuteInGameThread(function()
 	--[[
 	These objects don't exist on game start, Eve's obj is loaded soon before, Adam's - only when you load game.
@@ -271,3 +311,18 @@ end)
 -- 	print('Blueprint_C:Event_ChangeBattleState', ...)
 -- -- CNS refreshed state on it
 -- end)
+
+
+
+--[[
+Initialize mod: build cache at startup asynchronously.
+This scans all .dekcns.json files to extract UniqueFitID mappings.
+If cache already exists, this will be very fast.
+Runs async so it doesn't block game loading.
+]]
+-- ExecuteAsync(_func__log_traceback(function()
+ExecuteInGameThread(_func__log_traceback(function()
+	logger.info('SNS mod initializing: building mods cache...')
+	assets.ensure_cache()	-- Build/load cache (UniqueFitID -> file path mapping)
+	logger.info('SNS mod initialization complete')
+end))

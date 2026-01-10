@@ -416,4 +416,34 @@ end
 
 
 
+
+--[[
+Hide ponytail mesh components for a character.
+Args:
+	character - character instance (SBCharacter)
+]]
+function M.hide_ponytail(character)
+	if not character or not character:IsValid() then
+		logger.warn('invalid character, cannot hide ponytail')
+		return
+	end
+
+	-- Method 1: Try to set mesh to null/none
+	if character.SBPonytail and character.SBPonytail:IsValid() then
+		logger.info('hiding SBPonytail')
+		-- Try multiple methods to hide the ponytail
+		character.SBPonytail:SetSkeletalMesh(nil, true)
+		character.SBPonytail:SetVisibility(false, true)
+		character.SBPonytail:SetHiddenInGame(true, true)
+	end
+
+	if character.SBPonytailShort and character.SBPonytailShort:IsValid() then
+		logger.info('hiding SBPonytailShort')
+		character.SBPonytailShort:SetSkeletalMesh(nil, true)
+		character.SBPonytailShort:SetVisibility(false, true)
+		character.SBPonytailShort:SetHiddenInGame(true, true)
+	end
+end
 return M
+
+

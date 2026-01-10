@@ -1,11 +1,12 @@
-local MOD_NAME = 'SNS'
+local is_debug = false
 
+local MOD_NAME = 'SNS'
 local M = {}
 
-
-
 function M.info(...)
-	print('['..MOD_NAME..'] ', ...)
+	if is_debug then
+		print('['..MOD_NAME..'] ', ..., "\n")
+	end
 end
 
 
@@ -25,7 +26,9 @@ end
 
 
 function M.log(level, ...)
-	print('['..MOD_NAME..']['..level..'] ', ...)
+	if is_debug then
+		print('['..MOD_NAME..']['..level..'] ', ..., "\n")
+	end
 end
 
 
