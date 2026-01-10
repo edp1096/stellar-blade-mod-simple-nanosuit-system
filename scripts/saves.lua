@@ -49,7 +49,7 @@ end
 
 function M.SavedSettings.new(data_raw)
 	assert(numbers.is_boolean_or_nil(data_raw.Enabled),							'SavedSettings.Enabled should contain list of Replacement or empty list')
-	assert(numbers.is_boolean_or_nil(data_raw.HidePonytail),					'SavedSettings.HidePonytail should be boolean or nil')
+	assert(numbers.is_boolean_or_nil(data_raw.ShowPonytail),					'SavedSettings.ShowPonytail should be boolean or nil')
 	assert(tables.is_list_of_or_nil(data_raw.Replacements, tables.is_table),	'SavedSettings.Replacements should contain list of Replacement or be an empty list')
 
 	if data_raw.Enabled == nil then		-- check in separate thread bc we can't just compare "data_raw.Enabled or true" - we also expect false
@@ -58,7 +58,7 @@ function M.SavedSettings.new(data_raw)
 
 	local data = {
 		Enabled			= data_raw.Enabled,
-		HidePonytail	= data_raw.HidePonytail or false,
+		ShowPonytail	= data_raw.ShowPonytail ~= false,	-- default to true (show ponytail by default)
 		Replacements	= tables.map(data_raw.Replacements or {}, function(data_raw__current)
 								return  M.Replacement.new(data_raw__current)
 							end),

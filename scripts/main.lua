@@ -90,9 +90,12 @@ local function apply_mod_to_character(character_id)
 
 	for _, character_instance in pairs(character_instances) do
 
-		-- Hide ponytail if requested in settings
-		if save.HidePonytail then
-			logger.info('HidePonytail is enabled, hiding ponytail for', character_id)
+		-- Show or hide ponytail based on settings
+		if save.ShowPonytail then
+			logger.info('ShowPonytail is enabled, showing ponytail for', character_id)
+			characters.show_ponytail(character_instance)
+		else
+			logger.info('ShowPonytail is disabled, hiding ponytail for', character_id)
 			characters.hide_ponytail(character_instance)
 		end
 

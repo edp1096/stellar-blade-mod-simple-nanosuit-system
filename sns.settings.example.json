@@ -1,6 +1,6 @@
 {
 	"Enabled": true,
-	"HidePonytail": false,
+	"ShowPonytail": true,
 	"Replacements": [
 		{
 			"UniqueFitID": "k7_YoRHafy_SkyAceNSFW"

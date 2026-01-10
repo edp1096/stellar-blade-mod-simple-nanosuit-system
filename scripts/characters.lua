@@ -444,6 +444,33 @@ function M.hide_ponytail(character)
 		character.SBPonytailShort:SetHiddenInGame(true, true)
 	end
 end
+
+
+
+--[[
+Show ponytail mesh components for a character (reverse of hide_ponytail).
+Args:
+	character - character instance (SBCharacter)
+]]
+function M.show_ponytail(character)
+	if not character or not character:IsValid() then
+		logger.warn('invalid character, cannot show ponytail')
+		return
+	end
+
+	-- Restore visibility for ponytail components
+	if character.SBPonytail and character.SBPonytail:IsValid() then
+		logger.info('showing SBPonytail')
+		character.SBPonytail:SetVisibility(true, true)
+		character.SBPonytail:SetHiddenInGame(false, true)
+	end
+
+	if character.SBPonytailShort and character.SBPonytailShort:IsValid() then
+		logger.info('showing SBPonytailShort')
+		character.SBPonytailShort:SetVisibility(true, true)
+		character.SBPonytailShort:SetHiddenInGame(false, true)
+	end
+end
 return M
 
 
