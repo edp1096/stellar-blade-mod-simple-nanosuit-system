@@ -471,6 +471,7 @@ function M.show_ponytail(character)
 		character.SBPonytailShort:SetHiddenInGame(false, true)
 	end
 end
+
 return M
 
 
