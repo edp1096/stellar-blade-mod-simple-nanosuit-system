@@ -1,7 +1,9 @@
 local config		= require('config')	-- read it before importing from "packages"
 local assets		= require('assets')
 local characters	= require('characters')
+local fs			= require('fs')
 local logger		= require('logger')
+local path			= require('path')
 local saves			= require('saves')
 local tables		= require('tables')
 local ue			= require('ue')
@@ -10,6 +12,9 @@ local ue			= require('ue')
 
 local save		= nil
 local mods_info	= nil
+
+-- Reload flag file name
+local RELOAD_FLAG_FILE_NAME = 'sns.reload.flag'
 
 
 
@@ -204,6 +209,36 @@ end
 
 
 
+--[[
+Check if reload flag file exists and process it.
+If file exists, reload outfits and then delete the flag file.
+]]
+local function check_and_process_reload_flag()
+	local mod_dir = fs.mod_dir__get()
+	local reload_flag_path = path.join(mod_dir, RELOAD_FLAG_FILE_NAME)
+
+	if fs.file__check_exists(reload_flag_path) then
+		logger.info('reload flag detected, reloading outfits')
+
+		ExecuteInGameThread(_func__log_traceback(function()
+			main()
+
+			-- Delete the flag file after processing
+			local success, err = pcall(function()
+				os.remove(reload_flag_path)
+			end)
+
+			if success then
+				logger.info('reload flag processed and removed')
+			else
+				logger.error('failed to remove reload flag:', err)
+			end
+		end))
+	end
+end
+
+
+
 RegisterKeyBind(config.KEY__RELOAD_MOD, function()
 	logger.info(('key %s hit,  loading custom nanosuit'):format(config.KEY__RELOAD_MOD))
 
@@ -329,3 +364,14 @@ ExecuteInGameThread(_func__log_traceback(function()
 	assets.ensure_cache()	-- Build/load cache (UniqueFitID -> file path mapping)
 	logger.info('SNS mod initialization complete')
 end))
+
+
+
+--[[
+Start periodic check for reload flag file.
+Checks every 2 seconds if sns.reload.flag exists and processes it if found.
+]]
+LoopAsync(2000, function()
+	check_and_process_reload_flag()
+	return false	-- return false to continue the loop
+end)
