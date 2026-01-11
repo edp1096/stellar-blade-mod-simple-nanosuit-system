@@ -247,6 +247,10 @@ M.ShapeKey.__index	= M.ShapeKey
 
 
 function M.ShapeKey.new(data_raw)
+	if not data_raw.ShapeKeyName and data_raw.DisplayName then	-- special case, it's how it was implemented in CNS
+		data_raw.ShapeKeyName = data_raw.DisplayName
+	end
+
 	assert(strings.is_string(data_raw.ShapeKeyName),	'ShapeKey.ShapeKeyName is required string')
 	assert(numbers.is_number(data_raw.Value),			'ShapeKey.Value is required number')
 
